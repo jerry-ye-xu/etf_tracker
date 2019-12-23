@@ -65,36 +65,48 @@ class fund(object):
     historical_data: Previous (60) days of adjusted closing price data stored in queue-like data structure.
     """
 
-    def __init__(self, ticker: str, days_to_store: int) -> None:
+    def __init__(self, ticker: str) -> None:
         self.ticker = ticker
-        self.days_to_store = days_to_store
+        self.days_to_store = None
 
         self.function = None
         self.interval = None
         self.series_type = None
-        self.low_time_period = None
-        self.high_time_period = None
+        self.low_freq_period = None
+        self.high_freq_period = None
 
         self.status_duration = 0
         self.prev_status = None
         self.status = None
-        self.holiday = True
+        self.holiday = None
 
         # We use deque because it automatically "wraps around" when maxlen is reached.
-        self.freq_low = deque(maxlen=days_to_store)
-        self.freq_high = deque(maxlen=days_to_store)
+        self.freq_low = None
+        self.freq_high = None
+
+        self.low_streak_alert = None
+        self.high_streak_alert = None
 
     def initial_build(
         self,
-        function: str, interval: str, series_type: str,
-        low_time_period: int, high_time_period: int,
+        function: str, interval: str,
+        series_type: str, days_to_store: int,
+        low_freq_period: int, high_freq_period: int,
+        low_streak_alert: int, high_streak_alert: int,
         save_path: str) -> None:
 
         self.function = function
         self.interval = interval
         self.series_type = series_type
-        self.low_time_period = low_time_period
-        self.high_time_period = high_time_period
+        self.days_to_store = days_to_store
+
+        self.low_freq_period = low_freq_period
+        self.high_freq_period = high_freq_period
+        self.low_streak_alert = low_streak_alert
+        self.high_streak_alert = high_streak_alert
+
+        self.freq_low = deque(maxlen=days_to_store)
+        self.freq_high = deque(maxlen=days_to_store)
 
         self.date_format = "%Y-%m-%d"
 
@@ -104,26 +116,29 @@ class fund(object):
         self.file_path = f"{save_path}/{self.ticker}_{self.function}"
 
         self._save_raw_sma_json(
-            self.low_time_period,
+            self.low_freq_period,
             self.freq_low
         )
         self._save_raw_sma_json(
-            self.high_time_period,
+            self.high_freq_period,
             self.freq_high
         )
         self.status = "lower" if self.freq_low[-1] < self.freq_high[-1] else "higher"
 
-    def build_for_update(self):
-        pass
+    def run_daily_update(self) -> str:
 
-    def update_price(self):
+        self.update_price()
+
+        return self.report_streak()
+
+    def update_price(self) -> None:
         today = dt.datetime.today().strftime(self.date_format)
 
-        json_sma_low = self._call_api(self.low_time_period)
-        json_sma_high = self._call_api(self.high_time_period)
+        json_sma_low = self._call_api(self.low_freq_period)
+        json_sma_high = self._call_api(self.high_freq_period)
 
         if json_sma_low is None or json_sma_high is None:
-            print("Price could not be updated at this time.")
+            print(f"Price for {self.ticker} could not be updated at this time.")
             return
 
         try:
@@ -146,13 +161,38 @@ class fund(object):
     def define_reporting_params(self) -> None:
         pass
 
-    def report_streak(self) -> None:
-        pass
+    def report_streak(self) -> str:
+        """
 
-    def _save_raw_sma_json(
-        self,
-        time_period: int,
-        storage: deque) -> None:
+        The self.status refers to relative price of lower frequency SMA (e.g. 3) relative to higher frequency SMA (e.g. 10).
+
+        If 3-SMA is lower than 10-SMA, it means that prices are currently going down. We do not want to wait for too long, but
+
+        """
+
+        self.alert_message = f"Low freq price is currently {self.status}, at {self.freq_low[-1]} compared to high freq price {self.freq_high[-1]}."
+        self.duration_message = f"Current status has been ongoing for \
+                                {self.status_duration} days."
+
+        if self.status == "lower" and \
+            self.prev_status == "higher" and \
+                self.status_duration >= self.low_streak_alert:
+
+            self.buy_message = f"Status duration has passed {self.low_streak_alert}. Consider buying!"
+
+            return f"{self.alert_message}\n{self.duration_message}\n{self.buy_message}"
+
+        if self.status == "higher" and \
+            self.prev_status == "lower" and \
+                self.status_duration >= self.high_streak_alert:
+
+            self.sell_message = f"Status duration has passed {self.low_streak_alert}. Consider selling!"
+
+            return f"{self.alert_message}\n{self.duration_message}\n{self._message}"
+
+        return f"Status is {self.status}.\nPrevious status is{self.prev_status}.\nCurrent status duration is {self.status_duration}"
+
+    def _save_raw_sma_json(self, time_period: int, storage: deque) -> None:
 
         json_file = self._call_api(time_period)
 
@@ -167,10 +207,7 @@ class fund(object):
 
         return json_file
 
-    def _store_raw_json(
-        self,
-        storage_deque: deque,
-        json_file: JSONType) -> None:
+    def _store_raw_json(self, storage_deque: deque, json_file: JSONType) -> None:
 
         base = dt.datetime.today()
 
@@ -223,14 +260,18 @@ class fund(object):
 
         return res.json()
 
-
     def _write_to_txt(self, time_period: int, json_file: JSONType) -> None:
         with open(f"{self.file_path}_{time_period}.txt", "w") as f:
             for k, v in json_file[JSON_KEY].items():
                 f.write(f"{k} ")
                 f.write(f"{json_file[JSON_KEY][k][self.function]}\n")
 
-    def _update_price_in_txt(self, date, storage, time_period):
+    def _update_price_in_txt(
+        self,
+        date: str,
+        storage: deque,
+        time_period: int) -> None:
+
         with open(f"{self.file_path}_{time_period}.txt", "r") as f:
             curr = f.read()
         with open(f"{self.file_path}_{time_period}.txt", "w") as f:
@@ -256,37 +297,54 @@ class fund(object):
         if self.holiday:
             return
 
-        self.prev_status = self.status
+        if self.prev_status is None:
+            self.prev_status = self.status
+
         tmp_status = "lower" if self.freq_low[-1] < self.freq_high[-1] else "higher"
 
         if tmp_status != self.status:
             self.status_duration = 0
+            self.prev_status = self.status
             self.status = tmp_status
         else:
             self.status_duration += 1
 
-if __name__ == "__main__":
+    def _store_var_in_json(self, path) -> None:
+        pass
 
+    def _restore_from_json(self, path) -> None:
+        pass
+
+if __name__ == "__main__":
     function = "SMA"
     interval = "daily"
     series_type = "close"
-    time_period_low = 3
-    time_period_high = 10
+    days_to_store = 120
+    low_freq_period = 3
+    high_freq_period = 10
+    low_streak_alert = 1
+    high_streak_alert = 5
     save_path = "./data"
 
     ticker="VEU"
 
-    aapl_fund = fund(ticker=ticker, days_to_store=60)
+    aapl_fund = fund(ticker=ticker)
     # print(aapl_fund.freq_low)
 
     aapl_fund.initial_build(
         function,
         interval,
         series_type,
-        time_period_low,
-        time_period_high,
+        days_to_store,
+        low_freq_period,
+        high_freq_period,
+        low_streak_alert,
+        high_streak_alert,
         save_path
     )
+
+    # CANNOT slice a deque object
+    # print(aapl_fund.freq_low[3:5])
 
     # aapl_fund.update_price()
 
