@@ -27,7 +27,12 @@ The free API key allows for roughly 5 calls/min, limited to a total of 500 calls
 
 ## Initial Setup
 
+Test the script by running
 
+```{bash}
+python3 src/main.py
+```
+The script will terminate if any of the tickers cannot be found, and return such a list.
 
 ## Virtual Env
 
@@ -92,6 +97,7 @@ Some snippets:
 
 ## Worklog
 
+- 0.0.4-rc | 25/12/19: Added checks for API calls, and return `False` if call fails. Tested `main.py` function.
 - 0.0.3-rc | 23/12/19: Added `run_daily_update()` to `fund_sma.py`. Implement the function indefinitely in the `main.py` function. Refactored some functions.
 - 0.0.2-rc | 22/12/19: Re-wrote storage and retrieval for SMA prices instead of daily prices. Ensure an empty object is returned if API call limit is reached.
 - 0.0.1-rc | 08/12/19: Confirmed API key, setup `fund` object for daily prices.

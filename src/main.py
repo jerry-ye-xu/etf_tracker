@@ -27,6 +27,7 @@ if __name__ == "__main__":
     SLEEP_TIME = 2
     HOUR_IN_SECONDS = 60 * 60
     ALL_FUNDS = []
+    FAILED_FUNDS = []
 
     with open(tickers_file, "r") as f:
         for line in f:
@@ -41,7 +42,7 @@ if __name__ == "__main__":
             curr_fund = fund(ticker)
             # print(aapl_fund.freq_low)
 
-            curr_fund.initial_build(
+            result = curr_fund.initial_build(
                 function,
                 interval,
                 series_type,
@@ -53,16 +54,25 @@ if __name__ == "__main__":
                 save_path
             )
 
+            if not result:
+                FAILED_FUNDS.append(curr_fund.ticker)
+
             ALL_FUNDS.append(curr_fund)
             time.sleep(SLEEP_TIME)
+
+    if len(FAILED_FUNDS) > 0:
+        print(FAILED_FUNDS)
+        return
 
     print("The following tickers have been loaded.")
     for i in range(len(ALL_FUNDS)):
         print(ALL_FUNDS[i].ticker)
+        print(ALL_FUNDS[i].report_fund())
 
     while True:
         for i in range(24):
             print(f"{i}th hour.")
-            time.sleep(hour_in_seconds)
+            time.sleep(HOUR_IN_SECONDS)
         for fund in ALL_FUNDS:
             fund.run_daily_update()
+            fund.report_fund()

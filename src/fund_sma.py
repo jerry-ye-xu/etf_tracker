@@ -93,7 +93,7 @@ class fund(object):
         series_type: str, days_to_store: int,
         low_freq_period: int, high_freq_period: int,
         low_streak_alert: int, high_streak_alert: int,
-        save_path: str) -> None:
+        save_path: str) -> bool:
 
         self.function = function
         self.interval = interval
@@ -115,15 +115,21 @@ class fund(object):
         # differs only with frequency, f"self.file_path_{time_period}.txt"
         self.file_path = f"{save_path}/{self.ticker}_{self.function}"
 
-        self._save_raw_sma_json(
+        success_one = self._save_raw_sma_json(
             self.low_freq_period,
             self.freq_low
         )
-        self._save_raw_sma_json(
+        success_two = self._save_raw_sma_json(
             self.high_freq_period,
             self.freq_high
         )
-        self.status = "lower" if self.freq_low[-1] < self.freq_high[-1] else "higher"
+
+        if success_one and success_two:
+            self.status = "lower" if self.freq_low[-1] < self.freq_high[-1] else "higher"
+        else:
+            return False
+
+        return True
 
     def run_daily_update(self) -> str:
 
@@ -161,12 +167,23 @@ class fund(object):
     def define_reporting_params(self) -> None:
         pass
 
+    def report_fund(self) -> str:
+        """
+
+        Report the sticker and today's prices
+
+        """
+
+        fund_price_and_ticker = f"{self.ticker} prices today are:\n\t\tSMA-{self.low_freq_period}: {self.freq_low[-1]}\n\t\tSMA-{self.high_freq_period}: {self.freq_high[-1]}."
+
+        return fund_price_and_ticker
+
     def report_streak(self) -> str:
         """
 
         The self.status refers to relative price of lower frequency SMA (e.g. 3) relative to higher frequency SMA (e.g. 10).
 
-        If 3-SMA is lower than 10-SMA, it means that prices are currently going down. We do not want to wait for too long, but
+        If 3-SMA is lower than 10-SMA, it means that prices are currently going down.
 
         """
 
@@ -192,12 +209,12 @@ class fund(object):
 
         return f"Status is {self.status}.\nPrevious status is{self.prev_status}.\nCurrent status duration is {self.status_duration}"
 
-    def _save_raw_sma_json(self, time_period: int, storage: deque) -> None:
+    def _save_raw_sma_json(self, time_period: int, storage: deque) -> bool:
 
         json_file = self._call_api(time_period)
 
         if json_file is None:
-            return
+            return False
 
         self._store_raw_json(
             storage,
@@ -205,7 +222,7 @@ class fund(object):
         )
         self._write_to_txt(time_period, json_file)
 
-        return json_file
+        return True
 
     def _store_raw_json(self, storage_deque: deque, json_file: JSONType) -> None:
 
@@ -326,7 +343,7 @@ if __name__ == "__main__":
     high_streak_alert = 5
     save_path = "./data"
 
-    ticker="VEU"
+    ticker="VGB"
 
     aapl_fund = fund(ticker=ticker)
     # print(aapl_fund.freq_low)
