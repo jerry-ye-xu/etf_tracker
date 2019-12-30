@@ -1,9 +1,12 @@
 # Common Libraries
 import argparse
+import subprocess as sp
 import time
 
+from typing import Any, Union, Dict, List, Sequence, Tuple, Optional, Deque
+
 # Local Python files
-from fund_sma import *
+from fund_sma import fund
 from type_hint_objs import JSONType
 
 key_byte_str = sp.run(["cat", "VINTAGE_API_KEY"], capture_output=True).stdout
@@ -26,18 +29,18 @@ if __name__ == "__main__":
 
     SLEEP_TIME = 2
     HOUR_IN_SECONDS = 60 * 60
-    ALL_FUNDS = []
+    ALL_FUNDS: List[fund] = []
     FAILED_FUNDS = []
 
     with open(tickers_file, "r") as f:
         for line in f:
             arr = [x.strip() for x in line.split(sep=",")]
 
-            ticker = arr[0]
-            low_freq_period = arr[1]
-            high_freq_period = arr[2]
-            low_streak_alert = arr[3]
-            high_streak_alert = arr[4]
+            ticker: str = arr[0]
+            low_freq_period: int = int(arr[1])
+            high_freq_period: int = int(arr[2])
+            low_streak_alert: int = int(arr[3])
+            high_streak_alert: int = int(arr[4])
 
             curr_fund = fund(ticker)
             # print(aapl_fund.freq_low)
@@ -61,8 +64,7 @@ if __name__ == "__main__":
             time.sleep(SLEEP_TIME)
 
     if len(FAILED_FUNDS) > 0:
-        print(FAILED_FUNDS)
-        return
+        raise ValueError(f"The following funds could not be found: {FAILED_FUNDS}")
 
     print("The following tickers have been loaded.")
     for i in range(len(ALL_FUNDS)):
@@ -73,6 +75,6 @@ if __name__ == "__main__":
         for i in range(24):
             print(f"{i}th hour.")
             time.sleep(HOUR_IN_SECONDS)
-        for fund in ALL_FUNDS:
-            fund.run_daily_update()
-            fund.report_fund()
+        for curr_fund in ALL_FUNDS:
+            curr_fund.run_daily_update()
+            curr_fund.report_fund()

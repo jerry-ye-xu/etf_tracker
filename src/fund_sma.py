@@ -9,7 +9,7 @@ from collections import deque
 import datetime as dt
 import requests
 import subprocess as sp
-from typing import Any, Union, Dict, List, Sequence, Tuple
+from typing import Any, Union, Dict, List, Sequence, Tuple, Optional, Deque
 
 # Python Wrapper/Github Repositories
 from alpha_vantage import timeseries as ts
@@ -67,25 +67,9 @@ class fund(object):
 
     def __init__(self, ticker: str) -> None:
         self.ticker = ticker
-        self.days_to_store = None
-
-        self.function = None
-        self.interval = None
-        self.series_type = None
-        self.low_freq_period = None
-        self.high_freq_period = None
 
         self.status_duration = 0
-        self.prev_status = None
-        self.status = None
-        self.holiday = None
-
-        # We use deque because it automatically "wraps around" when maxlen is reached.
-        self.freq_low = None
-        self.freq_high = None
-
-        self.low_streak_alert = None
-        self.high_streak_alert = None
+        self.prev_status: Any = None # for redefinitions
 
     def initial_build(
         self,
@@ -105,8 +89,10 @@ class fund(object):
         self.low_streak_alert = low_streak_alert
         self.high_streak_alert = high_streak_alert
 
-        self.freq_low = deque(maxlen=days_to_store)
-        self.freq_high = deque(maxlen=days_to_store)
+
+        # We use deque because it automatically "wraps around" when maxlen is reached.
+        self.freq_low: Deque[float] = deque(maxlen=days_to_store)
+        self.freq_high: Deque[float] = deque(maxlen=days_to_store)
 
         self.date_format = "%Y-%m-%d"
 
@@ -148,13 +134,19 @@ class fund(object):
             return
 
         try:
-            self.freq_low.append(json_sma_low[JSON_KEY][today][self.function])
-            self.freq_high.append(json_sma_high[JSON_KEY][today][self.function])
+            self.freq_low.append(json_sma_low[JSON_KEY][today][self.function]) # type: ignore
+            self.freq_high.append(json_sma_high[JSON_KEY][today][self.function]) # type: ignore
 
             self.holiday = False
 
-            self._update_price_in_txt(today, self.freq_low)
-            self._update_price_in_txt(today, self.freq_high)
+            self._update_price_in_txt(today,
+                self.freq_low,
+                self.low_freq_period
+            )
+            self._update_price_in_txt(today,
+                self.freq_high,
+                self.high_freq_period
+            )
         except KeyError:
             print(f"{today} has no new stock prices. Inserting yesterday's stock price.")
             self.freq_low.append(self.freq_low[-1])
@@ -174,9 +166,9 @@ class fund(object):
 
         """
 
-        fund_price_and_ticker = f"{self.ticker} prices today are:\n\t\tSMA-{self.low_freq_period}: {self.freq_low[-1]}\n\t\tSMA-{self.high_freq_period}: {self.freq_high[-1]}."
+        # fund_price_and_ticker = f"{self.ticker} prices today are:\n\t\tSMA-{self.low_freq_period}: {self.freq_low[-1]}\n\t\tSMA-{self.high_freq_period}: {self.freq_high[-1]}."
 
-        return fund_price_and_ticker
+        return f"{self.ticker} prices today are:\n\t\tSMA-{self.low_freq_period}: {self.freq_low[-1]}\n\t\tSMA-{self.high_freq_period}: {self.freq_high[-1]}."
 
     def report_streak(self) -> str:
         """
@@ -205,7 +197,7 @@ class fund(object):
 
             self.sell_message = f"Status duration has passed {self.low_streak_alert}. Consider selling!"
 
-            return f"{self.alert_message}\n{self.duration_message}\n{self._message}"
+            return f"{self.alert_message}\n{self.duration_message}\n{self.sell_message}"
 
         return f"Status is {self.status}.\nPrevious status is{self.prev_status}.\nCurrent status duration is {self.status_duration}"
 
@@ -229,13 +221,13 @@ class fund(object):
         base = dt.datetime.today()
 
         date_list = [base - dt.timedelta(days=x) for x in range(self.days_to_store)]
-        date_list = [date.strftime(self.date_format) for date in date_list]
+        date_list: List[str] = [date.strftime(self.date_format) for date in date_list]
         print(f"earliest date is {date_list[-1]}")
 
         idx = 0
         for date in date_list[::-1]:
             try:
-                storage_deque.append(json_file[JSON_KEY][date][self.function])
+                storage_deque.append(json_file[JSON_KEY][date][self.function]) # type: ignore
             except KeyError:
                 print(f"Date: {date} contains no information. Utilising price from previous available data.")
                 if idx == 0:
@@ -249,7 +241,7 @@ class fund(object):
                         d = back_d.strftime(self.date_format)
                         print(f"date is {d}")
                         try:
-                            storage_deque.append(json_file[JSON_KEY][d][self.function])
+                            storage_deque.append(json_file[JSON_KEY][d][self.function]) # type: ignore
                             print(f"found first price at {d}")
                             found_price = True
                         except KeyError:
@@ -279,9 +271,9 @@ class fund(object):
 
     def _write_to_txt(self, time_period: int, json_file: JSONType) -> None:
         with open(f"{self.file_path}_{time_period}.txt", "w") as f:
-            for k, v in json_file[JSON_KEY].items():
+            for k, v in json_file[JSON_KEY].items(): # type: ignore
                 f.write(f"{k} ")
-                f.write(f"{json_file[JSON_KEY][k][self.function]}\n")
+                f.write(f"{json_file[JSON_KEY][k][self.function]}\n") # type: ignore
 
     def _update_price_in_txt(
         self,

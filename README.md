@@ -83,8 +83,6 @@ docker top
 
 ## Makefile
 
-
-
 ## Type Hinting
 
 Here are some references:
@@ -95,8 +93,57 @@ Here are some references:
 Some snippets:
 - [Type hinting for JSON files](https://www.notion.so/jerryyexu/How-to-type-hint-for-JSON-files-05ced2e7b5394ddc87ea174ab14fec34#fd599f70941e4a3ba3766deb483f499e)
 
+## Using Mypy
+
+__Full version__
+
+```{bash}
+mypy --ignore-missing-imports --allow-redefinition ./src/fund_sma.py ./src/main.py
+```
+
+__Quick guide__
+
+To run mypy on a python file, simply install it and
+```{bash}
+mypy <file.py>
+```
+
+To ignore import errors of the type add the `-ignore-missing-imports` flag.
+
+```{bash}
+mypy --ignore-missing-imports ./src/fund_sma.py
+```
+
+To ignore an error add a comment like below
+```{python}
+def func(x: str) -> None:
+    y = None
+    y = x # type: ignore
+```
+
+To allow for re-defintions add the following flag
+```{python}
+mypy --allow-redefinition ./src/fund_sma.py
+```
+The PR is [here](https://github.com/python/mypy/pull/6197) and the original Github issue is [here](https://github.com/python/mypy/issues/1174)
+
+Obtaining the following errors whenever I append to the deque.
+
+```
+src/fund_sma.py:231: error: Value of type "Union[str, int, float, bool, None, Dict[str, Any], List[Any]]" is not indexable
+src/fund_sma.py:231: error: No overload variant of "__getitem__" of "list" matches argument type "str"
+src/fund_sma.py:231: note: Possible overload variants:
+src/fund_sma.py:231: note:     def __getitem__(self, int) -> Any
+src/fund_sma.py:231: note:     def __getitem__(self, slice) -> List[Any]
+src/fund_sma.py:231: error: Invalid index type "str" for "Union[str, int, float, bool, None, Dict[str, Any], List[Any]]"; expected type "Union[int, slice]"
+src/fund_sma.py:231: error: Invalid index type "str" for "Union[str, Any]"; expected type "Union[int, slice]"
+```
+
+Going to ask mypy to ignore it for now until I figure out how to deal with this.
+
 ## Worklog
 
+- 0.0.5-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented
 - 0.0.4-rc | 25/12/19: Added checks for API calls, and return `False` if call fails. Tested `main.py` function.
 - 0.0.3-rc | 23/12/19: Added `run_daily_update()` to `fund_sma.py`. Implement the function indefinitely in the `main.py` function. Refactored some functions.
 - 0.0.2-rc | 22/12/19: Re-wrote storage and retrieval for SMA prices instead of daily prices. Ensure an empty object is returned if API call limit is reached.
