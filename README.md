@@ -7,6 +7,7 @@
 - [Docker](#docker)
 - [Makefile](#makefile)
 - [Type Hinting](#type-hinting)
+- [Logging](#logging)
 - [Worklog](#work-log)
 
 ---
@@ -127,23 +128,18 @@ mypy --allow-redefinition ./src/fund_sma.py
 ```
 The PR is [here](https://github.com/python/mypy/pull/6197) and the original Github issue is [here](https://github.com/python/mypy/issues/1174)
 
-Obtaining the following errors whenever I append to the deque.
+## Logging
 
+To specify a `streamHandler` explicitly, you can simply
+```{python}
+sh = logging.StreamHandler(sys.stdout) # sys.stderr etc.
 ```
-src/fund_sma.py:231: error: Value of type "Union[str, int, float, bool, None, Dict[str, Any], List[Any]]" is not indexable
-src/fund_sma.py:231: error: No overload variant of "__getitem__" of "list" matches argument type "str"
-src/fund_sma.py:231: note: Possible overload variants:
-src/fund_sma.py:231: note:     def __getitem__(self, int) -> Any
-src/fund_sma.py:231: note:     def __getitem__(self, slice) -> List[Any]
-src/fund_sma.py:231: error: Invalid index type "str" for "Union[str, int, float, bool, None, Dict[str, Any], List[Any]]"; expected type "Union[int, slice]"
-src/fund_sma.py:231: error: Invalid index type "str" for "Union[str, Any]"; expected type "Union[int, slice]"
-```
-
-Going to ask mypy to ignore it for now until I figure out how to deal with this.
+For more and adding filters see [here](https://stackoverflow.com/questions/1383254/logging-streamhandler-and-standard-streams)
 
 ## Worklog
 
-- 0.0.5-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented
+- 0.0.6-rc | 11/01/20: Add logging to `fund_sma.py`. Fix issues with `main.py`, you have to retrieve fund by indexing and not `for f in ALL_FUNDS` etc.
+- 0.0.5-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented. Added backup and restoring of class variables.
 - 0.0.4-rc | 25/12/19: Added checks for API calls, and return `False` if call fails. Tested `main.py` function.
 - 0.0.3-rc | 23/12/19: Added `run_daily_update()` to `fund_sma.py`. Implement the function indefinitely in the `main.py` function. Refactored some functions.
 - 0.0.2-rc | 22/12/19: Re-wrote storage and retrieval for SMA prices instead of daily prices. Ensure an empty object is returned if API call limit is reached.

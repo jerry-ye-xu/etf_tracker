@@ -1,5 +1,6 @@
 # Common Libraries
 import argparse
+import logging
 import subprocess as sp
 import time
 
@@ -8,6 +9,23 @@ from typing import Any, Union, Dict, List, Sequence, Tuple, Optional, Deque
 # Local Python files
 from fund_sma import fund
 from type_hint_objs import JSONType
+from logging_obj import LoggerObject
+
+FORMAT = "%(asctime)s: %(name)s - %(levelname)s\n %(message)s"
+
+LOGS = LoggerObject(name="logging_object", level=logging.DEBUG)
+LOGS.add_handler(
+    level=logging.ERROR,
+    formatting=FORMAT,
+    handler=logging.StreamHandler,
+    name=None
+)
+LOGS.add_handler(
+    level=logging.DEBUG,
+    formatting=FORMAT,
+    handler=logging.FileHandler,
+    name="sma_fund.log"
+)
 
 key_byte_str = sp.run(["cat", "VINTAGE_API_KEY"], capture_output=True).stdout
 vintage_api_key = str(key_byte_str, "utf-8")
@@ -17,6 +35,8 @@ vintage_api_key = str(key_byte_str, "utf-8")
 parser = argparse.ArgumentParser(description='Receive csv of funds and frequency to track.')
 
 if __name__ == "__main__":
+
+    TESTING = True
 
     tickers_file = "./data/tickers_to_track.csv"
 
@@ -33,6 +53,10 @@ if __name__ == "__main__":
     FAILED_FUNDS = []
 
     with open(tickers_file, "r") as f:
+        num_tickers = f.readline()
+        print(f"num_tickers: {num_tickers}")
+        ALL_FUNDS = [None]*int(num_tickers)
+        idx = 0
         for line in f:
             arr = [x.strip() for x in line.split(sep=",")]
 
@@ -42,10 +66,10 @@ if __name__ == "__main__":
             low_streak_alert: int = int(arr[3])
             high_streak_alert: int = int(arr[4])
 
-            curr_fund = fund(ticker)
+            ALL_FUNDS[idx] = fund(ticker, LOGS)
             # print(aapl_fund.freq_low)
 
-            result = curr_fund.initial_build(
+            result = ALL_FUNDS[idx].initial_build(
                 function,
                 interval,
                 series_type,
@@ -58,9 +82,9 @@ if __name__ == "__main__":
             )
 
             if not result:
-                FAILED_FUNDS.append(curr_fund.ticker)
+                FAILED_FUNDS.append(ALL_FUNDS[idx].ticker)
 
-            ALL_FUNDS.append(curr_fund)
+            idx += 1
             time.sleep(SLEEP_TIME)
 
     if len(FAILED_FUNDS) > 0:
@@ -74,7 +98,45 @@ if __name__ == "__main__":
     while True:
         for i in range(24):
             print(f"{i}th hour.")
-            time.sleep(HOUR_IN_SECONDS)
-        for curr_fund in ALL_FUNDS:
-            curr_fund.run_daily_update()
-            curr_fund.report_fund()
+            if TESTING:
+                time.sleep(2.5) # times 24
+            else:
+                time.sleep(HOUR_IN_SECONDS)
+        print("24 hour wait finished. Now updating funds.")
+        for i in range(len(ALL_FUNDS)):
+            print(f"ALL_FUNDS[i]: {ALL_FUNDS[i]}")
+            ALL_FUNDS[i].run_daily_update()
+            ALL_FUNDS[i].report_fund()
+        print("sleeping for 60 seconds")
+        time.sleep(60)
+
+    # For some reason you can't do this.
+    # for f in ALL_FUNDS:
+    #     print(f)
+    #     f.report_fund()
+
+    # print("sleeping for 60 seconds")
+    # time.sleep(60)
+
+    # for curr_fund in ALL_FUNDS:
+    #     print(ALL_FUNDS)
+    #     print("run_daily_update")
+    #     curr_fund.run_daily_update()
+    #     print("report_fund")
+    #     curr_fund.report_fund()
+    #     print("finished")
+    #     print("sleeping for 60 seconds")
+    #     time.sleep(60)
+
+    # while True:
+    #     for i in range(24):
+    #         print(f"{i}th hour.")
+    #         if TESTING:
+    #             time.sleep(2.5) # times 24
+    #         else:
+    #             time.sleep(HOUR_IN_SECONDS)
+    #     print("24 hour wait finished. Now updating funds.")
+    #     for curr_fund in ALL_FUNDS:
+    #         print(ALL_FUNDS)
+    #         curr_fund.run_daily_update()
+    #         curr_fund.report_fund()
