@@ -88,6 +88,7 @@ class fund(object):
         self.interval = interval
         self.series_type = series_type
         self.days_to_store = days_to_store
+        self.most_recent_date = dt.datetime.today().strftime(self.date_format)
 
         self.low_freq_period = low_freq_period
         self.high_freq_period = high_freq_period
@@ -137,37 +138,42 @@ class fund(object):
     def update_price(self) -> None:
         today = dt.datetime.today().strftime(self.date_format)
 
-        json_sma_low = self._call_api(self.low_freq_period)
-        json_sma_high = self._call_api(self.high_freq_period)
+        if today == self.most_recent_date:
+            self.logs.logger.warning(f"Updating price on the same day as {self.most_recent_date}. API will not be called")
+        else:
+            self.most_recent_date = today
+            json_sma_low = self._call_api(self.low_freq_period)
+            json_sma_high = self._call_api(self.high_freq_period)
 
-        if json_sma_low is None or json_sma_high is None:
-            self.logs.logger.error(f"Price for {self.ticker} could not be updated at this time.\nThe call to API returned an error perhaps?")
-            return
+            if json_sma_low is None or json_sma_high is None:
+                self.logs.logger.error(f"Price for {self.ticker} could not be updated at this time.\nThe call to API returned an error perhaps?")
+                return
 
-        try:
-            self.freq_low.append(json_sma_low[JSON_KEY][today][self.function]) # type: ignore
-            self.freq_high.append(json_sma_high[JSON_KEY][today][self.function]) # type: ignore
+            try:
+                self.freq_low.append(json_sma_low[JSON_KEY][today][self.function]) # type: ignore
+                self.freq_high.append(json_sma_high[JSON_KEY][today][self.function]) # type: ignore
 
-            self.holiday = False
+                self.holiday = False
 
-            self._update_price_in_txt(today,
-                self.freq_low,
-                self.low_freq_period
-            )
-            self._update_price_in_txt(today,
-                self.freq_high,
-                self.high_freq_period
-            )
-            self.logs.logger.info("API call successful. Today's prices updated.")
+                self._update_price_in_txt(today,
+                    self.freq_low,
+                    self.low_freq_period
+                )
+                self._update_price_in_txt(today,
+                    self.freq_high,
+                    self.high_freq_period
+                )
+                self.logs.logger.info("API call successful. Today's prices updated.")
 
-        except KeyError:
-            self.logs.logger.info(f"{today} has no new stock prices. Inserting yesterday's stock price.")
-            self.freq_low.append(self.freq_low[-1])
-            self.freq_high.append(self.freq_high[-1])
+            except KeyError:
+                self.logs.logger.info(f"{today} has no new stock prices. Inserting yesterday's stock price.")
+                self.freq_low.append(self.freq_low[-1])
+                self.freq_high.append(self.freq_high[-1])
 
-            self.holiday = True
+                self.holiday = True
 
-        self._update_return_status()
+            self._update_return_status()
+
         self.logs.logger.info("update_price() finished.")
 
     def define_reporting_params(self) -> None:
@@ -201,23 +207,29 @@ class fund(object):
             self.prev_status == "higher" and \
                 self.status_duration >= self.low_streak_alert:
 
-            self.buy_message = f"Status duration has passed {self.low_streak_alert}. Consider buying!"
+            self.action_message = f"Status duration has passed {self.low_streak_alert}. Consider buying!"
 
-            self.logs.logger.info(f"Today's message: {self.alert_message}\n{self.duration_message}\n{self.buy_message}")
-            return f"{self.alert_message}\n{self.duration_message}\n{self.buy_message}"
-
-        if self.status == "higher" and \
+        elif self.status == "higher" and \
             self.prev_status == "lower" and \
                 self.status_duration >= self.high_streak_alert:
 
-            self.sell_message = f"Status duration has passed {self.low_streak_alert}. Consider selling!"
+            self.action_message = f"Status duration has passed {self.high_streak_alert}. Consider selling!"
+        else:
+            self.action_message = "No action recommended."
 
+        self.logs.logger.info(f"Status is {self.status}.\n\
+                    Previous status is {self.prev_status}.\n\
+                    Current status duration is {self.status_duration}.\n\n\
+                    {self.alert_message}\n\
+                    {self.duration_message}\n\
+                    {self.action_message}")
 
-            self.logs.logger.info(f"Today's message: {self.alert_message}\n{self.duration_message}\n{self.sell_message}")
-            return f"{self.alert_message}\n{self.duration_message}\n{self.sell_message}"
-
-        self.logs.logger.info(f"Returning: Status is {self.status}.\nPrevious status is{self.prev_status}.\nCurrent status duration is {self.status_duration}")
-        return f"Status is {self.status}.\nPrevious status is{self.prev_status}.\nCurrent status duration is {self.status_duration}"
+        return f"Status is {self.status}.\n\
+                    Previous status is {self.prev_status}.\n\
+                    Current status duration is {self.status_duration}.\n\n\
+                    {self.alert_message}\n\
+                    {self.duration_message}\n\
+                    {self.action_message}"
 
     def _save_raw_sma_json(self, time_period: int, storage: deque) -> bool:
 

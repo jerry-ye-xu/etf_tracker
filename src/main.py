@@ -49,7 +49,6 @@ if __name__ == "__main__":
 
     SLEEP_TIME = 2
     HOUR_IN_SECONDS = 60 * 60
-    ALL_FUNDS: List[fund] = []
     FAILED_FUNDS = []
 
     with open(tickers_file, "r") as f:
@@ -105,8 +104,9 @@ if __name__ == "__main__":
         print("24 hour wait finished. Now updating funds.")
         for i in range(len(ALL_FUNDS)):
             print(f"ALL_FUNDS[i]: {ALL_FUNDS[i]}")
-            ALL_FUNDS[i].run_daily_update()
-            ALL_FUNDS[i].report_fund()
+            print(ALL_FUNDS[i].ticker)
+            print(ALL_FUNDS[i].run_daily_update())
+            print(ALL_FUNDS[i].report_fund())
         print("sleeping for 60 seconds")
         time.sleep(60)
 
