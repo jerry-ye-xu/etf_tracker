@@ -1,0 +1,35 @@
+{% extends "tracker/_layouts/base.html" %}
+{% block content %}
+    <h1>Funds List</h1>
+    {% for fund in funds_list %}
+        <article class="media content-section">
+          <div>
+            <p>TICKER: {{ fund.ticker }}</p>
+            <p>STATUS: {{ fund.status }}</p>
+            <p>STATUS DURATION: {{ fund.status_duration }}</p>
+          </div>
+        </article>
+    {% endfor %}
+{% endblock content %}
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+    {% if title %}
+        <title> {{ Title }}</title>
+    {% else %}
+        <title>The Blog</title>
+    {% endif %}
+</head>
+<body>
+    <h1>Home Page</h1>
+
+    {% for post in data %}
+        <h1>{{ post.title }} </h1>
+        <p> By {{ post.author }} on {{ post.date_posted }} </p>
+        <p> {{ post.content }} <p>
+    {% endfor %}
+</body>
+</html> -->
+
+<!-- NOTE: NO SPACE FOR FILTERS |add:-->

@@ -26,6 +26,19 @@ The API we use to retrieve information will be Alpha Vantage. There's a Python l
 
 The free API key allows for roughly 5 calls/min, limited to a total of 500 calls/day.
 
+Put the VANTAGE_API_KEY as an environment variable with
+```
+export VANTAGE_API_KEY=$(cat VANTAGE_API_KEY)
+```
+and retrieve it with
+```{python}
+vantage_api_key = os.environ.get('VANTAGE_API_KEY')
+
+if vantage_api_key is None:
+    raise ValueError("vantage_api_key not set as environment variable!")
+```
+Note: Exporting of environment variables must be done in the same shell process.
+
 ## Initial Setup
 
 Test the script by running
@@ -99,7 +112,7 @@ Some snippets:
 __Full version__
 
 ```{bash}
-mypy --ignore-missing-imports --allow-redefinition ./src/fund_sma.py ./src/main.py
+mypy --ignore-missing-imports --allow-redefinition ./src/fund_sma.py ./src/main.py ./src/logging_obj.py
 ```
 
 __Quick guide__
@@ -138,6 +151,7 @@ For more and adding filters see [here](https://stackoverflow.com/questions/13832
 
 ## Worklog
 
+- 0.0.7-rc | 12/01/20: Add Django backend with models and initial database schema and data migrations. Allow for `fund_package` to be an installable package within the Django backend.
 - 0.0.6-rc | 11/01/20: Add logging to `fund_sma.py`. Fix issues with `main.py`, you have to retrieve fund by indexing and not `for f in ALL_FUNDS` etc.
 - 0.0.5-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented. Added backup and restoring of class variables.
 - 0.0.4-rc | 25/12/19: Added checks for API calls, and return `False` if call fails. Tested `main.py` function.
