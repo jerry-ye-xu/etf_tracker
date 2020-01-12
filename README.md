@@ -151,6 +151,7 @@ For more and adding filters see [here](https://stackoverflow.com/questions/13832
 
 ## Worklog
 
+- 0.0.8-rc | 12/01/20: Added `views` to display data on webpage for `ListView`.
 - 0.0.7-rc | 12/01/20: Add Django backend with models and initial database schema and data migrations. Allow for `fund_package` to be an installable package within the Django backend.
 - 0.0.6-rc | 11/01/20: Add logging to `fund_sma.py`. Fix issues with `main.py`, you have to retrieve fund by indexing and not `for f in ALL_FUNDS` etc.
 - 0.0.5-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented. Added backup and restoring of class variables.
