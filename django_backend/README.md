@@ -1,6 +1,7 @@
 ## Table of Contents
 
 - [Migrations](#migrations)
+- [Querying](#querying)
 - [Worklog](#work-log)
 
 ---

@@ -1,5 +1,30 @@
 {% extends "tracker/_layouts/base.html" %}
 {% block content %}
+    {% for fund in funds_list %}
+        <div class="card text-center w-75 rounded">
+          <div class="card-header">
+            <b> {{ fund.ticker }} - {{ fund.ticker_full_name }} </b>
+          </div>
+          <div class="card-body">
+            <!-- <h5 class="card-title">Daily update</h5> -->
+            {% if fund.high_freq_period < fund.low_freq_period and fund.status_duration > fund.low_streak_alert %}
+                <h5 class="card-title"> Consider buying! </h5>
+            {% elif fund.high_freq_period > fund.low_freq_period and fund.status_duration > fund.high_streak_alert %}
+                <h5 class="card-title"> Consider selling! </h5>
+            {% else %}
+                <h5 class="card-title"> Prices have not yet hit their respective streaks. No action recommended for now. </h5>
+            {% endif %}
+
+            <div class="container-fluid">
+                <button type="button" class="btn btn-info ml-2">{{fund.function}}-{{fund.high_freq_period}}: ${{ fund.latest_high_price | floatformat:2 }}</button>
+                <button type="button" class="btn btn-info ml-2">{{fund.function}}-{{fund.low_freq_period}}: ${{ fund.latest_low_price | floatformat:2 }}</button>
+            </div>
+            <br>
+            <a href="#" class="btn btn-primary ml-2">See Details</a>
+          </div>
+        </div>
+        <br>
+    {% endfor %}
     <h1>Funds List</h1>
     {% for fund in funds_list %}
         <article class="media content-section">
@@ -10,26 +35,24 @@
           </div>
         </article>
     {% endfor %}
+<!--       <article class="media content-section">
+        {% for fund_price in funds_prices %}
+          <article class="media content-section">
+            <div>
+              <p>TICKER: {{ fund_price.fund.ticker }}</p>
+              <p>STATUS: {{ fund_price.fund.status }}</p>
+              <p>STATUS DURATION: {{ fund_price.fund.status_duration }}</p>
+            </div>
+          </article>
+          <div>
+            <p>TICKER: {{ fund_price.fund.ticker }}</p>
+            <br>
+            <p>FREQ_TYPE: {{ fund_price.freq_type }}</p>
+            <br>
+            <p>DATE: {{ fund_price.date }}</p>
+            <br>
+            <p>PRICE: {{ fund_price.price }}</p>
+          </div>
+        {% endfor %}
+      </article> -->
 {% endblock content %}
-
-<!-- <!DOCTYPE html>
-<html>
-<head>
-    {% if title %}
-        <title> {{ Title }}</title>
-    {% else %}
-        <title>The Blog</title>
-    {% endif %}
-</head>
-<body>
-    <h1>Home Page</h1>
-
-    {% for post in data %}
-        <h1>{{ post.title }} </h1>
-        <p> By {{ post.author }} on {{ post.date_posted }} </p>
-        <p> {{ post.content }} <p>
-    {% endfor %}
-</body>
-</html> -->
-
-<!-- NOTE: NO SPACE FOR FILTERS |add:-->

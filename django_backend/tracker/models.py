@@ -4,6 +4,10 @@ from django.db import models
 
 class Fund(models.Model):
     ticker = models.CharField(unique=True, max_length=10)
+    ticker_full_name = models.CharField(
+        max_length=100,
+        default=""
+    )
     function = models.CharField(max_length=10)
     interval = models.CharField(max_length=10)
     days_to_store = models.IntegerField()
@@ -13,10 +17,15 @@ class Fund(models.Model):
     low_streak_alert = models.IntegerField()
     high_streak_alert = models.IntegerField()
 
+    latest_low_price = models.FloatField(default=0)
+    latest_high_price = models.FloatField(default=0)
+
     status = models.CharField(max_length=10)
     status_duration = models.IntegerField()
     prev_status = models.CharField(max_length=10, null=True)
     holiday = models.BooleanField()
+
+    most_recent_date = models.DateField(null=True)
 
     def __str__(self):
         return f"ticker: {self.ticker} - {self.function} - {self.interval}\n\
