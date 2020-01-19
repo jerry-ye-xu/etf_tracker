@@ -6,50 +6,104 @@
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ETF Tracker</title>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tracker/bulma/css/bulma.css' %}">
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="{% static 'tracker/anchor.css' %}">
 
-    <!-- Absolute URL -->
-    <link rel="stylesheet" type="text/css" href="{% static 'blog/main.css' %}">
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
 
-    {% if title %}
+<!--     <script>
+      var dropdown = document.querySelector('.dropdown is-pulled-right');
+      dropdown.addEventListener('click', function(event) {
+        event.stopPropagation();
+        dropdown.classList.toggle('is-active');
+      });
+    </script> -->
+
+    <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/click_dropdown.js' %}">
+    <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/create_plot.js' %}">
+
+    <!-- For debugging -->
+    <link rel="stylesheet" href="styles/debug.css">
+
+    {% if title %}x
         <title> {{ Title }}</title>
     {% else %}
         <title>Tracker</title>
     {% endif %}
 </head>
 <body>
-    <header class="site-header">
-      <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
-        <div class="container-md">
-          <a class="navbar-brand mr-4" href="{% url 'tracker-home' %}">ETF Tracker</a>
-          </div>
-        </div>
-      </nav>
-    </header>
-
-    <main role="main" class="container-lg">
-      <div class="row">
-        <div class="col-md-8">
-          <!-- How does Django see messages? Is it because it's part of the original templating? -->
-          {% if messages %}
-              {% for message in messages %}
-                <!-- Django and bootstrap have the same alert tags -->
-                <div class="alert alert-{{ message.tags}}">
-                  {{ message }}
-                </div>
-              {% endfor %}
-          {% endif %}
-          {% block content %}{% endblock %}
-        </div>
+<section class="hero is-info is-bold">
+      <div id="navbarMenuHeroA" class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item is-active" href="{% url 'tracker-home' %}">
+            Home
+          </a>
+          <a class="navbar-item" href="{% url 'tracker-about' %}">
+            About
+          </a>
+          <a class="navbar-item" href="https://jerry-ye-xu.github.io">
+            Website
+          </a>
+          <span class="navbar-item">
+            <a class="button is-info is-inverted" href="https://github.com/jerry-ye-xu/etf_tracker">
+              <span class="icon">
+                <i class="fab fa-github"></i>
+              </span>
+              <span>Repo</span>
+            </a>
+          </span>
         </div>
       </div>
-    </main>
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <h1 class="title" style="font-size: 48px">
+            ETF Tracker
+          </h1>
+          <p class="subtitle">
+            Better buy-in, better profits.
+          </p>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column one-third">
+          <div class="dropdown is-pulled-right" style="margin-right: 40px">
+            <div class="dropdown-trigger">
+              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                <span>Search Ticker</span>
+                <span class="icon is-small">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <div class="field dropdown-item">
+                  <div class="control has-icons-left">
+                    <input type="text" placeholder="ticker" class="input is-transparent">
+                    <span class="icon is-left">
+                      <i class="fa fa-search"></i>
+                    </span>
+                  </div>
+                </div>
+                <hr class="dropdown-divider">
+                {% for ticker in tickers_list %}
+                  <a class="dropdown-item" href="{% url 'tracker-fund-page' ticker %}">
+                    {{ ticker }}
+                  </a>
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+        </div>
+    </section>
 
-    <!-- jQuery first, Popper.js, then Bootstrap JS-->
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+    {% block content %}{% endblock %}
+
+    <script type="text/javascript" src="{% static 'javascript/click_dropdown.js' %}"></script>
+
 </body>
 </html>

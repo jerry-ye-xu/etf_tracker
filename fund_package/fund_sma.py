@@ -67,17 +67,29 @@ class fund(object):
     historical_data: Previous (60) days of adjusted closing price data stored in queue-like data structure.
     """
 
-    def __init__(self, ticker: str, logs: LoggerObject) -> None:
+    def __init__(self,
+        ticker: str,
+        days_to_store: int,
+        logs: LoggerObject) -> None:
+
         self.ticker = ticker
         self.logs = logs
+
+        self.date_format = "%Y-%m-%d"
+        self.most_recent_date = dt.datetime.today().strftime(self.date_format)
+
+        # We use deque because it automatically "wraps around" when maxlen is reached.
+        self.days_to_store = days_to_store
+        self.freq_low: Deque[float] = deque(maxlen=self.days_to_store)
+        self.freq_high: Deque[float] = deque(maxlen=self.days_to_store)
+        self.freq_dates: Deque[str] = deque(maxlen=self.days_to_store)
 
         self.status_duration = 0
         self.prev_status: Any = None # for redefinitions
 
     def initial_build(
         self,
-        function: str, interval: str,
-        series_type: str, days_to_store: int,
+        function: str, interval: str, series_type: str,
         low_freq_period: int, high_freq_period: int,
         low_streak_alert: int, high_streak_alert: int,
         save_path: str) -> bool:
@@ -85,20 +97,12 @@ class fund(object):
         self.function = function
         self.interval = interval
         self.series_type = series_type
-        self.days_to_store = days_to_store
+        # self.days_to_store = days_to_store
 
         self.low_freq_period = low_freq_period
         self.high_freq_period = high_freq_period
         self.low_streak_alert = low_streak_alert
         self.high_streak_alert = high_streak_alert
-
-        # We use deque because it automatically "wraps around" when maxlen is reached.
-        self.freq_low: Deque[float] = deque(maxlen=self.days_to_store)
-        self.freq_high: Deque[float] = deque(maxlen=self.days_to_store)
-        self.freq_dates: Deque[str] = deque(maxlen=self.days_to_store)
-
-        self.date_format = "%Y-%m-%d"
-        self.most_recent_date = dt.datetime.today().strftime(self.date_format)
 
         self.save_path = save_path
 
@@ -128,7 +132,7 @@ class fund(object):
     def run_daily_update(self) -> str:
 
         self.logs.logger.info(f"Running daily update for {self.ticker}")
-        self._backup_var_to_json() # backup before updating
+        # self._backup_var_to_json() # backup before updating
         self._update_price()
         self._update_return_status()
 

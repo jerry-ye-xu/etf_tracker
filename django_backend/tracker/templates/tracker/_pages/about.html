@@ -1,0 +1,94 @@
+{% extends "tracker/_layouts/base.html" %}
+{% block content %}
+  <section class="section is-medium" style="padding-top: 12px; padding-bottom: 12px;">
+    <div class="container is-block">
+      <div class="columns is-centered is-marginless" style="padding: 20px;">
+        <div class="column is-two-thirds" style="max-width: 512px; margin: 25px">
+            <div class="card">
+              <header class="card-header">
+                <p class="card-header-title is-centered" style="font-size: 24px;">
+                  About ETF Tracker
+                </p>
+              </header>
+              <div class="card-content">
+                <div class="content">
+                  Hi there!
+                  <br>
+                  <br>
+                  Welcome to the ETF Tracker.  I have recently been investing a small portion of my savings, and it so happened that it was right before the substantial dip at the end of 2018.
+                  <br>
+                  <br>
+                  The market bounced right back, and I realised that if I had a system to keep an eye on the growth I could have optimised growth further.
+                  <br>
+                  <br>
+                  Hence the idea of the ETF Tracker was born. It tracks the trend of price movement by comparing a long-term and short-term period of moving averages (SMA). Simple but effective.
+                  <br>
+                  <br>
+                  Feel free to browse around and shoot me a message if you have any questions =).
+                  <br>
+                  <br>
+                </div>
+                <div class="media">
+                  <div class="media-left" style="display: flex; justify-content: center;">
+                    <figure class="image is-128x128" style="display: flex; justify-content: center;">
+                      <img class=is-rounded src="{{MEDIA_URL}}dp_square.png" alt="Placeholder image">
+                    </figure>
+                  </div>
+                  <div class="media-content">
+                    <p class="title is-4" style="margin-bottom: 8px">Jerry Xu</p>
+<!--                     <div class="columns">
+                      <div class="column"> -->
+                        <span class="icon" style="padding-top: 0px; margin: 6px">
+                          <a href="https://twitter.com/jerryyexu1"><i class="fab fa-twitter fa-2x"></i></a>
+                        </span>
+                      <!-- </div> -->
+                      <!-- <div class="column"> -->
+                        <span class="icon" style="padding-top: 0px; margin: 6px">
+                          <a href="github.com/jerry-ye-xu"><i class="fab fa-github fa-2x"></i></a>
+                        </span>
+                      <!-- </div> -->
+                      <!-- <div class="column"> -->
+                        <span class="icon" style="padding-top: 0px; margin: 6px">
+                          <a href="https://www.linkedin.com/in/jerry-ye-xu/"><i class="fab fa-linkedin fa-2x"></i></a>
+                        </span>
+                      <!-- </div> -->
+                    <!-- </div> -->
+                  </div>
+                </div>
+                <footer class="card-footer">
+                  <p class="card-footer-item">version: {{ version }}</p>
+                </footer>
+            </div>
+            <!-- <div class="card">
+              <header class="card-header">
+                <p class="card-header-title is-centered" style="font-size: 24px;">
+                  About Project
+                </p>
+              </header>
+              <div class="card-content">
+                <div class="media">
+                  <div class="media-left">
+                    <figure class="image is-128x128">
+                      <img class=is-rounded src="{{MEDIA_URL}}dp.jpg" alt="Placeholder image">
+                    </figure>
+                  </div>
+                  <div class="media-content">
+                    <p class="title is-4">Jerry Xu</p>
+                    <p class="subtitle is-6">@jerryyexu1</p>
+                  </div>
+                </div>
+                <div class="content">
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                  Phasellus nec iaculis mauris. <a>@bulmaio</a>.
+                  <a href="#">#css</a> <a href="#">#responsive</a>
+                  <br>
+                </div>
+                <footer class="card-footer">
+                  <p class="card-footer-item">version: {{ version }}</p>
+                </footer>
+            </div> -->
+          </div>
+        </div>
+      </div>
+    </section>
+{% endblock content %}

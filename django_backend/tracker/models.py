@@ -10,6 +10,7 @@ class Fund(models.Model):
     )
     function = models.CharField(max_length=10)
     interval = models.CharField(max_length=10)
+    series_type = models.CharField(max_length=10, default="close")
     days_to_store = models.IntegerField()
 
     low_freq_period = models.IntegerField()

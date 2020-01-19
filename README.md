@@ -7,6 +7,7 @@
 - [Docker](#docker)
 - [Makefile](#makefile)
 - [Type Hinting](#type-hinting)
+- [SQLite3](#sqlite3)
 - [Logging](#logging)
 - [Worklog](#work-log)
 
@@ -95,8 +96,6 @@ docker ps
 docker top
 ```
 
-## Makefile
-
 ## Type Hinting
 
 Here are some references:
@@ -106,6 +105,27 @@ Here are some references:
 
 Some snippets:
 - [Type hinting for JSON files](https://www.notion.so/jerryyexu/How-to-type-hint-for-JSON-files-05ced2e7b5394ddc87ea174ab14fec34#fd599f70941e4a3ba3766deb483f499e)
+
+## SQLite3
+
+When working with dates, use `BETWEEN` and wrap the `datetime` object in single quotation marks.
+
+```{python}
+import datetime as dt
+import sqlite3
+
+conn = sqlite3.connect(DB_PATH)
+conn.row_factory = sqlite3.Row
+cur = conn.cursor()
+
+cutoff_date = dt.datetime.today() - dt.timedelta(days=15)
+today = dt.datetime.today().date()
+cutoff_date = cutoff_date.date()
+
+cur.execute(
+    f"SELECT * FROM table_name WHERE date BETWEEN '{cutoff_date}' AND '{today}'; """
+)
+```
 
 ## Using Mypy
 
@@ -151,11 +171,14 @@ For more and adding filters see [here](https://stackoverflow.com/questions/13832
 
 ## Worklog
 
-- 0.0.8-rc | 12/01/20: Added `views` to display data on webpage for `ListView`.
-- 0.0.7-rc | 12/01/20: Add Django backend with models and initial database schema and data migrations. Allow for `fund_package` to be an installable package within the Django backend.
-- 0.0.6-rc | 11/01/20: Add logging to `fund_sma.py`. Fix issues with `main.py`, you have to retrieve fund by indexing and not `for f in ALL_FUNDS` etc.
-- 0.0.5-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented. Added backup and restoring of class variables.
-- 0.0.4-rc | 25/12/19: Added checks for API calls, and return `False` if call fails. Tested `main.py` function.
-- 0.0.3-rc | 23/12/19: Added `run_daily_update()` to `fund_sma.py`. Implement the function indefinitely in the `main.py` function. Refactored some functions.
-- 0.0.2-rc | 22/12/19: Re-wrote storage and retrieval for SMA prices instead of daily prices. Ensure an empty object is returned if API call limit is reached.
-- 0.0.1-rc | 08/12/19: Confirmed API key, setup `fund` object for daily prices.
+- 0.0.11-rc | 19/01/20: Add links, about page, hover for dropdown, links to tickers, `json_script` for passing data to d3js.
+- 0.0.10-rc | 18/01/20: Moved Bulma to actual html templates not just `bulma_testing.html`. Sorted out the `MEDIA_URL` and `MEDIA_ROOT` issue.
+- 0.0.09-rc | 18/01/20: Changed CSS to Bulma. Built `fund_daily_update.py` that directly updates the DB.
+- 0.0.08-rc | 12/01/20: Added `views` to display data on webpage for `ListView`.
+- 0.0.07-rc | 12/01/20: Add Django backend with models and initial database schema and data migrations. Allow for `fund_package` to be an installable package within the Django backend.
+- 0.0.06-rc | 11/01/20: Add logging to `fund_sma.py`. Fix issues with `main.py`, you have to retrieve fund by indexing and not `for f in ALL_FUNDS` etc.
+- 0.0.05-rc | 30/12/19: Add `mypy` checks, mostly done except the unresolved issue documented. Added backup and restoring of class variables.
+- 0.0.04-rc | 25/12/19: Added checks for API calls, and return `False` if call fails. Tested `main.py` function.
+- 0.0.03-rc | 23/12/19: Added `run_daily_update()` to `fund_sma.py`. Implement the function indefinitely in the `main.py` function. Refactored some functions.
+- 0.0.02-rc | 22/12/19: Re-wrote storage and retrieval for SMA prices instead of daily prices. Ensure an empty object is returned if API call limit is reached.
+- 0.0.01-rc | 08/12/19: Confirmed API key, setup `fund` object for daily prices.
