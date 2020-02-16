@@ -54,7 +54,7 @@ class FundListView(ListView):
     model = Fund
     context_object_name = "funds_list"
     template_name = "tracker/_pages/home.html"
-    # paginate_by = 5
+    paginate_by = 2
 
     ordering = ["-most_recent_date"]
 
@@ -66,7 +66,9 @@ class FundListView(ListView):
 
         context["funds_prices"] = json.dumps(dict_obj, cls=DjangoJSONEncoder)
 
-        print(context["funds_prices"])
+        # print(context["funds_prices"])
+        # print(FundPrices.objects.get(date="2019-10-28"))
+        # print(context["funds_prices"]["11"]["low"]["2020-01-17"])
 
         return context
 
@@ -86,6 +88,6 @@ class FundDetailView(DetailView):
 
         context["funds_prices"] = json.dumps(dict_obj, cls=DjangoJSONEncoder)
 
-        print(context["funds_prices"])
+        # print(context["funds_prices"])
 
         return context

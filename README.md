@@ -9,6 +9,7 @@
 - [Type Hinting](#type-hinting)
 - [SQLite3](#sqlite3)
 - [Logging](#logging)
+- [Adding Tickers](#adding-tickers)
 - [Worklog](#work-log)
 
 ---
@@ -40,12 +41,18 @@ if vantage_api_key is None:
 ```
 Note: Exporting of environment variables must be done in the same shell process.
 
+## ASX Tickers
+
+Returning ASX tickers e.g. IOZ.AX is unreliable, sometimes it works and sometimes it doesn't. This interface will be built and tested with US equities for ease of testing.
+
+See [here](http://gnucash.1415818.n4.nabble.com/Finance-Quote-ASX-problems-alphavantage-and-ASX-sources-td4697091.html) for a quick reference.
+
 ## Initial Setup
 
 Test the script by running
 
 ```{bash}
-python3 src/main.py
+python3 fund_package/main.py
 ```
 The script will terminate if any of the tickers cannot be found, and return such a list.
 
@@ -125,6 +132,25 @@ cutoff_date = cutoff_date.date()
 cur.execute(
     f"SELECT * FROM table_name WHERE date BETWEEN '{cutoff_date}' AND '{today}'; """
 )
+
+res = cur.fetchall()
+```
+
+To check all your tables in SQLite
+```{sql}
+cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+res = cur.fetchall()
+for r in res:
+    print(r['name'])
+```
+In general, the table names are `<app_name>_<model_name>`. E.g. we will have `tracker_fund` and `tracker_fundprices`, which is consistent.
+
+To view columns of a table
+```
+cur.execute("SELECT name FROM sqlite_master WHERE type='table';")
+res = cur.fetchall()
+for r in res:
+    print(r['name']) # You can get list of key-value pairs with r.keys()
 ```
 
 ## Using Mypy
@@ -145,7 +171,7 @@ mypy <file.py>
 To ignore import errors of the type add the `-ignore-missing-imports` flag.
 
 ```{bash}
-mypy --ignore-missing-imports ./src/fund_sma.py
+mypy --ignore-missing-imports ./fund_package/fund_sma.py
 ```
 
 To ignore an error add a comment like below
@@ -169,8 +195,18 @@ sh = logging.StreamHandler(sys.stdout) # sys.stderr etc.
 ```
 For more and adding filters see [here](https://stackoverflow.com/questions/1383254/logging-streamhandler-and-standard-streams)
 
+## Adding Tickers
+
+Different exchanges have different abbreviations. For the ASX, it is "AX" and thus the iShares ASX200 would be "IOZ.AX"
+
+For more information check out this repo [here](https://github.com/prediqtiv/alpha-vantage-cookbook)
+
+The list of ETFs traded on the ASX can be found [here](https://www.marketindex.com.au/asx-etfs#aust-broad-exposure)
+
 ## Worklog
 
+- 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Minimal but we have made something appear.
+- 0.0.12-rc | 16/02/20: Build pagination, add additional fund data with migration. Add `latest_low/high_price` to `fund.py`.
 - 0.0.11-rc | 19/01/20: Add links, about page, hover for dropdown, links to tickers, `json_script` for passing data to d3js.
 - 0.0.10-rc | 18/01/20: Moved Bulma to actual html templates not just `bulma_testing.html`. Sorted out the `MEDIA_URL` and `MEDIA_ROOT` issue.
 - 0.0.09-rc | 18/01/20: Changed CSS to Bulma. Built `fund_daily_update.py` that directly updates the DB.

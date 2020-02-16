@@ -121,6 +121,9 @@ class fund(object):
 
         if success_one and success_two:
             self.status = "lower" if self.freq_low[-1] < self.freq_high[-1] else "higher"
+
+            self.latest_low_price = self.freq_low[-1]
+            self.latest_high_price = self.freq_high[-1]
         else:
             return False
         self.logs.logger.info(f"Set self.status to {self.status} during initialisation.")
