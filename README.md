@@ -217,6 +217,7 @@ For more of a difference in values between two lines (Financey), see [here](http
 
 ## Worklog
 
+- 0.0.14-rc | 18/02/20: Add search bar filter functionality.
 - 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Change colour scheme to green.
 - 0.0.12-rc | 16/02/20: Build pagination, add additional fund data with migration. Add `latest_low/high_price` to `fund.py`.
 - 0.0.11-rc | 19/01/20: Add links, about page, hover for dropdown, links to tickers, `json_script` for passing data to d3js.
