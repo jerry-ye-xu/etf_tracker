@@ -203,9 +203,15 @@ For more information check out this repo [here](https://github.com/prediqtiv/alp
 
 The list of ETFs traded on the ASX can be found [here](https://www.marketindex.com.au/asx-etfs#aust-broad-exposure)
 
+## Colours
+
+For a good spread of colours use this [website](https://www.colorhexa.com/33cc99).
+
+For colour conversion use this [one](https://convertingcolors.com/hsl-color-171_100_41.html#harmonies)
+
 ## Worklog
 
-- 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Minimal but we have made something appear.
+- 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Change colour scheme to green.
 - 0.0.12-rc | 16/02/20: Build pagination, add additional fund data with migration. Add `latest_low/high_price` to `fund.py`.
 - 0.0.11-rc | 19/01/20: Add links, about page, hover for dropdown, links to tickers, `json_script` for passing data to d3js.
 - 0.0.10-rc | 18/01/20: Moved Bulma to actual html templates not just `bulma_testing.html`. Sorted out the `MEDIA_URL` and `MEDIA_ROOT` issue.

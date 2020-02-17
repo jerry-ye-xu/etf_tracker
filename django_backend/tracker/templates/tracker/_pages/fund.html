@@ -1,5 +1,6 @@
 {% extends "tracker/_layouts/base.html" %}
 {% block content %}
+  {{ funds_prices|json_script:"fprices" }}
   <section class="section is-medium" style="padding-top: 12px; padding-bottom: 12px;">
     <div class="container is-block">
       <div class="columns is-centered is-marginless" style="padding: 20px;">
@@ -11,9 +12,7 @@
                 </p>
               </header>
               <div class="card-image">
-                <figure class="image is-4by3">
-                  <img src="{{MEDIA_URL}}basic-area-chart.svg" alt="Placeholder image">
-                </figure>
+                <svg id="ticker_{{ fund.id }}">
               </div>
               <div class="card-content">
                 <div class="columns is-centered">

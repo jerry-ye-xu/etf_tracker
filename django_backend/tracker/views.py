@@ -61,7 +61,7 @@ class FundListView(ListView):
     def get_context_data(self, *args, **kwargs):
         context = super(FundListView, self).get_context_data(**kwargs)
 
-        cutoff_date = filter_dates(n=30)
+        cutoff_date = filter_dates(n=60)
         dict_obj = format_json_obj(FundPrices.objects.filter(date__gte=cutoff_date))
 
         context["funds_prices"] = json.dumps(dict_obj, cls=DjangoJSONEncoder)

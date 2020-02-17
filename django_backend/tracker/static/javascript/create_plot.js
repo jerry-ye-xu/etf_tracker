@@ -89,6 +89,11 @@ function plotChart(
         .attr("width", svgWidth)
         .attr("height", svgHeight);
 
+    // svg.append("rect")
+    //     .attr("width", "100%")
+    //     .attr("height", "100%")
+    //     .attr("fill", "#e8f5fd");
+
     var line = d3.line()
         .x(function(d) {return xScale(d.date)})
         .y(function(d) {return yScale(d.value)});
@@ -125,6 +130,9 @@ function plotChart(
     var y_axis = d3.axisLeft()
         .scale(yScale);
 
+    x_axis.ticks(5);
+    y_axis.ticks(5);
+
     g.append("g")
         .attr("transform", "translate(0, " + height + ")")
         .call(x_axis);
@@ -143,6 +151,9 @@ function plotChart(
     is-primary: #00D1B2
     is-warning: #FFFF03
     is-black-ter: #242424
+
+    lighter-primary: #d0f3e7
+    lighter-black-ter: #f2f2f2
 
     */
 
