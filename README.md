@@ -10,6 +10,8 @@
 - [SQLite3](#sqlite3)
 - [Logging](#logging)
 - [Adding Tickers](#adding-tickers)
+- [Colours](#colours)
+- [d3 Enhancements](#d3-enhancements)
 - [Worklog](#work-log)
 
 ---
@@ -202,6 +204,14 @@ Different exchanges have different abbreviations. For the ASX, it is "AX" and th
 For more information check out this repo [here](https://github.com/prediqtiv/alpha-vantage-cookbook)
 
 The list of ETFs traded on the ASX can be found [here](https://www.marketindex.com.au/asx-etfs#aust-broad-exposure)
+
+__Filter search__
+
+Filter search bar [here](https://www.w3schools.com/howto/howto_js_filter_lists.asp)
+
+Not closing dropdown when [clicking](https://www.geeksforgeeks.org/how-to-avoid-dropdown-menu-to-close-menu-items-on-clicking-inside/)
+
+And having the search inside a dropdown [here](https://codepen.io/felipebrnd/pen/GOdveZ)
 
 ## Colours
 
