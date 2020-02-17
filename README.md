@@ -209,6 +209,12 @@ For a good spread of colours use this [website](https://www.colorhexa.com/33cc99
 
 For colour conversion use this [one](https://convertingcolors.com/hsl-color-171_100_41.html#harmonies)
 
+## d3 Enhancements
+
+For a shading between two lines, see [here](https://bl.ocks.org/jadiehm/0d341b74bef30889c893a3b14cbeb974).
+
+For more of a difference in values between two lines (Financey), see [here](https://bl.ocks.org/emeeks/02d6acaed240ba0a504e)
+
 ## Worklog
 
 - 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Change colour scheme to green.
