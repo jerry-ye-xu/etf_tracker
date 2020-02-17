@@ -83,22 +83,25 @@
               <div class="dropdown-content">
                 <div class="field dropdown-item">
                   <div class="control has-icons-left">
-                    <input type="text" placeholder="ticker" class="input is-transparent">
+                    <input id="ticker_search_bar" type="text" onkeyup="filterSearch()" placeholder="ticker" class="input is-transparent">
                     <span class="icon is-left">
                       <i class="fa fa-search"></i>
                     </span>
                   </div>
                 </div>
                 <hr class="dropdown-divider">
-                {% for ticker in tickers_list %}
-                  <a class="dropdown-item" href="{% url 'tracker-fund-page' ticker %}">
-                    {{ ticker }}
-                  </a>
-                {% endfor %}
+                  <ul id="ticker_list">
+                    {% for ticker in tickers_list %}
+                      <li><a class="dropdown-item" href="{% url 'tracker-fund-page' ticker %}">
+                        {{ ticker }}
+                      </a></li>
+                    {% endfor %}
+                  </ul>
               </div>
             </div>
           </div>
         </div>
+      </div>
     </section>
 
     {% block content %}{% endblock %}
@@ -108,6 +111,8 @@
     <script type="text/javascript" src="{% static 'javascript/click_dropdown.js' %}"></script>
 
     <script type="text/javascript" src="{% static 'javascript/create_plot.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'javascript/filter_ticker.js' %}"></script>
 
 </body>
 </html>
