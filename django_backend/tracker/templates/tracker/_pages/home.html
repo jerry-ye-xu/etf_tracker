@@ -1,0 +1,98 @@
+{% extends "tracker/_layouts/base.html" %}
+{% block content %}
+    {{ funds_prices|json_script:"fprices" }}
+    {% for fund in funds_list %}
+    <section class="section is-medium" style="padding-top: 12px; padding-bottom: 12px;">
+      <div class="container is-block">
+        <div class="columns is-centered is-marginless" style="padding: 20px;">
+          <div class="column is-two-thirds" style="max-width: 512px; margin: 25px">
+              <div class="card">
+                <header class="card-header has-background-white-ter">
+                  <p class="card-header-title is-centered has-text-black-ter" style="font-size: 24px;">
+                    {{ fund.ticker }}: {{ fund.ticker_full_name }}
+                  </p>
+                </header>
+                <div class="card-image">
+                  <svg id="ticker_{{ fund.id }}">
+                </div>
+                <div class="card-content">
+                  <div class="columns is-centered">
+                    <div class="column" style="display: flex; justify-content: center;">
+                      <button class="button is-rounded has-text-black-bis is-medium is-static is-light">
+                        <b>
+                        {{fund.function}}-{{fund.high_freq_period}}: ${{ fund.latest_high_price | floatformat:2 }}
+                        </b>
+                      </button>
+                    </div>
+                    <div class="column is-flex-desktop-only" style="display: flex; justify-content: center;">
+                      <button class="button is-rounded is-primary is-medium is-static is-light">
+                        <b>
+                        {{fund.function}}-{{fund.low_freq_period}}: ${{ fund.latest_low_price | floatformat:2 }}
+                        </b>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="field is-grouped is-grouped-multiline" style="display: flex; justify-content: center;">
+                    <div class="control">
+                      <div class="tags are-medium has-addons">
+                        <span class="tag is-dark">status</span>
+                        <span class="tag is-danger is-light" style="font-weight: bold">{{ fund.status }}</span>
+                      </div>
+                    </div>
+
+                    <div class="control">
+                      <div class="tags are-medium has-addons">
+                        <span class="tag is-dark">streak</span>
+                        <span class="tag is-danger is-light" style="font-weight: bold;">{{ fund.status_duration }}</span>
+                      </div>
+                    </div>
+
+                    <div class="control">
+                      <div class="tags are-medium has-addons">
+                        <span class="tag is-dark">holiday</span>
+                        <span class="tag is-danger is-light" style="font-weight: bold;">{{ fund.holiday }}</span>
+                      </div>
+                    </div>
+                  </div>
+        <!--               <div class="content">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                    Phasellus nec iaculis mauris. <a>@bulmaio</a>.
+                    <a href="#">#css</a> <a href="#">#responsive</a>
+                    <br>
+                    <p>Last refreshed: </p>
+                    <time datetime="2016-1-1">11:09 PM - 1 Jan 2016</time>
+                  </div> -->
+                </div>
+                  <footer class="card-footer has-background-white-ter">
+                    <p class="card-footer-item">Last refreshed: {{ fund.most_recent_date }}</p>
+                  </footer>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    {% endfor %}
+      <section class="section is-medium" style="padding-top: 3px; padding-bottom: 3px;">
+        <div class="container is-block">
+          <div class="columns is-centered is-marginless" style="padding: 10px;">
+            {% if is_paginated %}
+              {% if page_obj.has_previous %}
+                <a class="button is-primary is-light is-medium is-outlined" style="margin: 5px;" href="?page=1">First</a>
+                <a class="button is-primary is-light is-medium is-outlined" style="margin: 5px;" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+              {% endif %}
+              {% for num in page_obj.paginator.page_range %}
+                {% if page_obj.number == num %}
+                  <a class="button is-primary is-medium" style="margin: 5px;" href="?page={{ num }}">{{ num }}</a>
+                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                  <a class="button is-primary is-light is-medium is-outlined" style="margin: 5px;" href="?page={{ num }}">{{ num }}</a>
+                {% endif %}
+              {% endfor %}
+              {% if page_obj.has_next %}
+                <a class="button is-primary is-light is-medium is-outlined" style="margin: 5px;" href="?page={{ page_obj.next_page_number }}">Next</a>
+                <a class="button is-primary is-light is-medium is-outlined" style="margin: 5px;" href="?page={{ page_obj.paginator.num_pages }}">Last</a>
+              {% endif %}
+            {% endif %}
+          </div>
+        </div>
+      </section>
+{% endblock content %}

@@ -1,0 +1,118 @@
+<!-- Required for CSS -->
+{% load static %}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ETF Tracker</title>
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="{% static 'tracker/bulma/css/bulma.css' %}">
+
+    <link rel="stylesheet" type="text/css" href="{% static 'tracker/anchor.css' %}">
+
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+
+<!--     <script>
+      var dropdown = document.querySelector('.dropdown is-pulled-right');
+      dropdown.addEventListener('click', function(event) {
+        event.stopPropagation();
+        dropdown.classList.toggle('is-active');
+      });
+    </script> -->
+
+<!--     <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/click_dropdown.js' %}"> -->
+<!--     <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/create_plot.js' %}"> -->
+
+    <!-- For debugging -->
+    <link rel="stylesheet" type="text/css" href="styles/debug.css">
+
+    {% if title %}
+        <title> {{ Title }}</title>
+    {% else %}
+        <title>Tracker</title>
+    {% endif %}
+</head>
+<body>
+<section class="hero is-primary is-bold">
+      <div id="navbarMenuHeroA" class="navbar-menu">
+        <div class="navbar-end">
+          <a class="navbar-item is-active" href="{% url 'tracker-home' %}">
+            Home
+          </a>
+          <a class="navbar-item" href="{% url 'tracker-about' %}">
+            About
+          </a>
+          <a class="navbar-item" href="https://jerry-ye-xu.github.io">
+            Website
+          </a>
+          <span class="navbar-item">
+            <a class="button is-primary is-inverted" href="https://github.com/jerry-ye-xu/etf_tracker">
+              <span class="icon">
+                <i class="fab fa-github"></i>
+              </span>
+              <span>Repo</span>
+            </a>
+          </span>
+        </div>
+      </div>
+      <div class="hero-body">
+        <div class="container has-text-centered">
+          <h1 class="title" style="font-size: 48px">
+            ETF Tracker
+          </h1>
+          <p class="subtitle">
+            Better buy-in, better profits.
+          </p>
+        </div>
+      </div>
+      <div class="columns">
+        <div class="column one-third">
+          <div class="dropdown is-pulled-right" style="margin-right: 40px">
+            <div class="dropdown-trigger">
+              <button class="button" aria-haspopup="true" aria-controls="dropdown-menu">
+                <span>Search Ticker</span>
+                <span class="icon is-small">
+                  <i class="fa fa-angle-down" aria-hidden="true"></i>
+                </span>
+              </button>
+            </div>
+            <div class="dropdown-menu" id="dropdown-menu" role="menu">
+              <div class="dropdown-content">
+                <div class="field dropdown-item">
+                  <div class="control has-icons-left">
+                    <input id="ticker_search_bar" type="text" onkeyup="filterSearch()" placeholder="ticker" class="input is-transparent">
+                    <span class="icon is-left">
+                      <i class="fa fa-search"></i>
+                    </span>
+                  </div>
+                </div>
+                <hr class="dropdown-divider">
+                  <ul id="ticker_list">
+                    {% for ticker in tickers_list %}
+                      <li><a class="dropdown-item" href="{% url 'tracker-fund-page' ticker %}">
+                        {{ ticker }}
+                      </a></li>
+                    {% endfor %}
+                  </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {% block content %}{% endblock %}
+
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+
+    <script type="text/javascript" src="{% static 'javascript/click_dropdown.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'javascript/create_plot.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'javascript/filter_ticker.js' %}"></script>
+
+</body>
+</html>
