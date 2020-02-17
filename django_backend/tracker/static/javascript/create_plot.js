@@ -1,93 +1,207 @@
-var price_data = {"1": {"low": {"2019-12-20": 279.7333, "2019-12-21": 279.7333, "2019-12-22": 279.7333, "2019-12-23": 281.1533, "2019-12-24": 282.57, "2019-12-25": 282.57, "2019-12-26": 286.06, "2019-12-27": 287.9933, "2019-12-28": 287.9933, "2019-12-29": 287.9933, "2019-12-30": 290.41, "2019-12-31": 291.6567, "2020-01-01": 291.6567, "2020-01-02": 295.1733, "2020-01-03": 297.1433, "2020-01-04": 297.1433, "2020-01-05": 297.1433, "2020-01-06": 299.1933, "2020-01-07": 298.54, "2020-01-08": 300.46, "2020-01-09": 303.7367, "2020-01-10": 307.7167, "2020-01-11": 307.7167, "2020-01-12": 307.7167, "2020-01-18": 307.7167}, "high": {"2019-12-20": 275.225, "2019-12-21": 275.225, "2019-12-22": 275.225, "2019-12-23": 276.933, "2019-12-24": 278.512, "2019-12-25": 278.512, "2019-12-26": 280.426, "2019-12-27": 282.26, "2019-12-28": 282.26, "2019-12-29": 282.26, "2019-12-30": 283.897, "2019-12-31": 285.276, "2020-01-01": 285.276, "2020-01-02": 287.27, "2020-01-03": 289.039, "2020-01-04": 289.039, "2020-01-05": 289.039, "2020-01-06": 291.017, "2020-01-07": 292.912, "2020-01-08": 294.831, "2020-01-09": 297.367, "2020-01-10": 299.409, "2020-01-11": 299.409, "2020-01-12": 299.409, "2020-01-18": 299.409}}, "2": {"low": {"2019-12-20": 54.046, "2019-12-21": 54.046, "2019-12-22": 54.046, "2019-12-23": 53.948, "2019-12-24": 53.85, "2019-12-25": 53.85, "2019-12-26": 53.808, "2019-12-27": 53.788, "2019-12-28": 53.788, "2019-12-29": 53.788, "2019-12-30": 53.69, "2019-12-31": 53.724, "2020-01-01": 53.724, "2020-01-02": 53.904, "2020-01-03": 53.892, "2020-01-04": 53.892, "2020-01-05": 53.892, "2020-01-06": 53.874, "2020-01-07": 53.912, "2020-01-08": 53.942, "2020-01-09": 53.882, "2020-01-10": 53.936, "2020-01-11": 53.936, "2020-01-12": 53.936, "2020-01-18": 53.936}, "high": {"2019-12-20": 52.6727, "2019-12-21": 52.6727, "2019-12-22": 52.6727, "2019-12-23": 52.707, "2019-12-24": 52.7457, "2019-12-25": 52.7457, "2019-12-26": 52.7957, "2019-12-27": 52.8567, "2019-12-28": 52.8567, "2019-12-29": 52.8567, "2019-12-30": 52.9083, "2019-12-31": 52.953, "2020-01-01": 52.953, "2020-01-02": 53.021, "2020-01-03": 53.0653, "2020-01-04": 53.0653, "2020-01-05": 53.0653, "2020-01-06": 53.124, "2020-01-07": 53.182, "2020-01-08": 53.2417, "2020-01-09": 53.295, "2020-01-10": 53.345, "2020-01-11": 53.345, "2020-01-12": 53.345, "2020-01-18": 53.345}}}
+function strToDate(dateStr, sep="-") {
+    // for some reason this is unreliable... you get some weird results
+    // should double check this.
+
+    console.log(new Date(dateStr))
+
+    return new Date(dateStr)
+}
+
+function plotChart(
+    fp_single, ticker_id,
+    svgWidth, svgHeight,
+    tag_id)
+{
+
+    /*
+        EXTRACT PRICE DATA
+    */
+
+    fp_dates = Object.keys(fp_single["low"]);
+    fp_low = Object.values(fp_single["low"]);
+    fp_high = Object.values(fp_single["high"]);
+
+    console.log(fp_dates)
+
+    // We see later we can use d3.extent() to return min and max.
+    max_price = Math.max(...fp_low.concat(fp_high));
+    min_price = Math.min(...fp_low.concat(fp_high));
+
+    var fp_low_data = [];
+    var fp_high_data = [];
+
+    // for (var i = 0; i < fp_dates.length; i++){
+    //     fp_low_data.push({
+    //         date: strToDate(fp_dates[i], sep="-"), value: fp_low[i]
+    //     })
+    //     fp_high_data.push({
+    //         date: strToDate(fp_dates[i], sep="-"), value: fp_high[i]
+    //     })
+    // }
+    for (var i = 0; i < fp_dates.length; i++){
+        fp_low_data.push({
+            date: strToDate(fp_dates[i]), value: fp_low[i]
+        })
+        fp_high_data.push({
+            date: strToDate(fp_dates[i]), value: fp_high[i]
+        })
+    }
+
+    console.log(fp_low_data)
+
+    /*
+        MARGINS
+    */
+
+    var margin = {
+        top: 50,
+        bottom: 60,
+        right: 20,
+        left: 50
+    }
+
+    var width = svgWidth - margin.left - margin.right
+    var height = svgHeight - margin.top - margin.bottom
+
+    /*
+        SCALES AND AXIS
+    */
+
+    // var xScale = d3.scaleLinear()
+    //     .domain([0, fp_dates.length])
+    //     .range([0, svgWidth]);
+
+    // var yScale = d3.scaleLinear()
+    //     .domain([min_price * 0.8, max_price])
+    //     .range([svgHeight, 0]);
+
+    var xScale = d3.scaleTime()
+        .rangeRound([0, width]);
+
+    var yScale = d3.scaleLinear()
+        .rangeRound([height, 0]);
+
+    /*
+        CREATE THE OBJECT
+    */
+
+    var svg = d3.select(tag_id)
+        .attr("width", svgWidth)
+        .attr("height", svgHeight);
+
+    var line = d3.line()
+        .x(function(d) {return xScale(d.date)})
+        .y(function(d) {return yScale(d.value)});
+
+    yScale.domain(
+        d3.extent(fp_low.concat(fp_high))
+    );
+    xScale.domain(
+        d3.extent(fp_dates.map(strToDate))
+    );
+    console.log(fp_dates.map(strToDate))
+
+    /*
+        translate(a, b), as value increases, we have
+        a: is L -> R
+        b: is U -> D
+
+        behaviour for x-axis and y-axis is the same.
+    */
+
+    // svg.append('g')
+    //     .attr("transform", "translate(50, -17.5)")
+    //     .call(y_axis)
+
+    // svg.append('g')
+    //     .attr("transform", "translate(50, -17.5)")
+    //     .call(x_axis)
+
+    var g = svg.append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x_axis = d3.axisBottom()
+        .scale(xScale);
+    var y_axis = d3.axisLeft()
+        .scale(yScale);
+
+    g.append("g")
+        .attr("transform", "translate(0, " + height + ")")
+        .call(x_axis);
+
+    g.append("g")
+        .call(y_axis);
+
+    /*
+        CREATE LINES AND DOTS
+    */
+
+    /*
+
+    is-info: #209CEE
+    is-link: #3273DC
+    is-primary: #00D1B2
+    is-warning: #FFFF03
+    is-black-ter: #242424
+
+    */
+
+    g.append("path")
+        .datum(fp_low_data)
+        .attr("fill", "None")
+        .attr("stroke", "#00D1B2")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 2.5)
+        .attr("d", line);
+
+    g.append("path")
+        .datum(fp_high_data)
+        .attr("fill", "None")
+        .attr("stroke", "#242424")
+        .attr("stroke-linejoin", "round")
+        .attr("stroke-linecap", "round")
+        .attr("stroke-width", 2.5)
+        .attr("d", line);
+
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left + 65)
+      .attr("x", -40 - (height/2))
+      // .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Price ($ US)");
+
+    svg.append("text")
+      .attr("transform", "translate(" + (width/2 + 50) + " ," + (height + margin.top + 40) + ")")
+      .style("text-anchor", "middle")
+      .text("Date");
+
+}
 
 /*
 First JSON.parse gets rid of the \"low\" etc.
 Second JSON.parse converts it into an actual JSON object.
 */
-// var fprice = JSON.parse(document.getElementById('fprices').textContent);
-// var price_data = JSON.parse(fprice);
+var fprice = JSON.parse(document.getElementById('fprices').textContent);
+var price_data = JSON.parse(fprice);
 
-// var data_len = Object.keys(price_data["1"]["low"]).length
 document.addEventListener('DOMContentLoaded', function(e) {
+    /*
+    First JSON.parse gets rid of the \"low\" etc.
+    Second JSON.parse converts it into an actual JSON object.
+    */
+    var fprice = JSON.parse(document.getElementById('fprices').textContent);
+    var price_data = JSON.parse(fprice);
 
-});
+    fund_id = Object.keys(price_data)
 
-function drawChart(fund_id, data){
-    // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 30, left: 60},
-        width = 460 - margin.left - margin.right,
-        height = 400 - margin.top - margin.bottom;
+    console.log(fund_id)
 
-    // append the svg object to the body of the page
-    var svg = d3.select("#single_plot")
-      .append("svg")
-        .attr("width", width + margin.left + margin.right)
-        .attr("height", height + margin.top + margin.bottom)
-      .append("g")
-        .attr("transform",
-              "translate(" + margin.left + "," + margin.top + ")");
-
-    // Add X axis --> it is a date format
-    var x = d3.scaleTime()
-      .domain(d3.extent(data, function(d) { return d.date; }))
-      .range([ 0, width ]);
-
-    svg.append("g")
-      .attr("transform", "translate(0," + height + ")")
-      .call(d3.axisBottom(x));
-
-    // Add Y axis
-    var y = d3.scaleLinear()
-      .domain([0, d3.max(data, function(d) { return +d.value; })])
-      .range([ height, 0 ]);
-
-    svg.append("g")
-      .call(d3.axisLeft(y));
-
-    // Add the line
-    svg.append("path")
-      .datum(data)
-      .attr("fill", "none")
-      .attr("stroke", "steelblue")
-      .attr("stroke-width", 1.5)
-      .attr("d", d3.line()
-        .x(function(d) { return x(d.date) })
-        .y(function(d) { return y(d.value) })
+    fund_id.forEach(function(fund_id){
+        plotChart(
+          price_data[fund_id], fund_id,
+          488, 366, "#ticker_" + fund_id
         )
-}
-
-    //   // When reading the csv, I must format variables:
-    //   function(d){
-    //     return { date : d3.timeParse("%Y-%m-%d")(d.date), value : d.value }
-    //   },
-
-    //   // Now I can use this dataset:
-    //   function(data) {
-
-    //     // Add X axis --> it is a date format
-    //     var x = d3.scaleTime()
-    //       .domain(d3.extent(data, function(d) { return d.date; }))
-    //       .range([ 0, width ]);
-    //     svg.append("g")
-    //       .attr("transform", "translate(0," + height + ")")
-    //       .call(d3.axisBottom(x));
-
-    //     // Add Y axis
-    //     var y = d3.scaleLinear()
-    //       .domain([0, d3.max(data, function(d) { return +d.value; })])
-    //       .range([ height, 0 ]);
-    //     svg.append("g")
-    //       .call(d3.axisLeft(y));
-
-    //     // Add the line
-    //     svg.append("path")
-    //       .datum(data)
-    //       .attr("fill", "none")
-    //       .attr("stroke", "steelblue")
-    //       .attr("stroke-width", 1.5)
-    //       .attr("d", d3.line()
-    //         .x(function(d) { return x(d.date) })
-    //         .y(function(d) { return y(d.value) })
-    //         )
-
-    // })
+    });
+});

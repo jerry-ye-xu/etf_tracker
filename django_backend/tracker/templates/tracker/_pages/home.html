@@ -13,21 +13,19 @@
                   </p>
                 </header>
                 <div class="card-image">
-                  <figure class="image is-4by3">
-                    <img src="{{MEDIA_URL}}basic-area-chart.svg" alt="Placeholder image">
-                  </figure>
+                  <svg id="ticker_{{ fund.id }}">
                 </div>
                 <div class="card-content">
                   <div class="columns is-centered">
                     <div class="column" style="display: flex; justify-content: center;">
-                      <button class="button is-info is-medium is-static is-light">
+                      <button class="button is-black-ter is-medium is-static is-light">
                         <b>
                         {{fund.function}}-{{fund.high_freq_period}}: ${{ fund.latest_high_price | floatformat:2 }}
                         </b>
                       </button>
                     </div>
                     <div class="column is-flex-desktop-only" style="display: flex; justify-content: center;">
-                      <button class="button is-info is-medium is-static is-light">
+                      <button class="button is-primary is-medium is-static is-light">
                         <b>
                         {{fund.function}}-{{fund.low_freq_period}}: ${{ fund.latest_low_price | floatformat:2 }}
                         </b>

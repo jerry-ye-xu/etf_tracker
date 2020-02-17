@@ -23,11 +23,11 @@
       });
     </script> -->
 
-    <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/click_dropdown.js' %}">
-    <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/create_plot.js' %}">
+<!--     <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/click_dropdown.js' %}"> -->
+<!--     <link rel="stylesheet" type="text/javascript" href="{% static 'javascript/create_plot.js' %}"> -->
 
     <!-- For debugging -->
-    <link rel="stylesheet" href="styles/debug.css">
+    <link rel="stylesheet" type="text/css" href="styles/debug.css">
 
     {% if title %}
         <title> {{ Title }}</title>
@@ -103,7 +103,11 @@
 
     {% block content %}{% endblock %}
 
+    <script src="http://d3js.org/d3.v4.min.js"></script>
+
     <script type="text/javascript" src="{% static 'javascript/click_dropdown.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'javascript/create_plot.js' %}"></script>
 
 </body>
 </html>

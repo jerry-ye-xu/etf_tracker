@@ -1,10 +1,22 @@
 ## Table of Contents
 
+- [Basic Commands](#basic-commands)
 - [Migrations](#migrations)
 - [Querying](#querying)
+- [Media in Dev](#media-in-dev)
+- [Adding Context Processor](#adding-context-processor)
+- [Sending data to DOM in HTML](#sending-data-to-dom-in-html)
+- [Pagination](#pagination)
 - [Worklog](#work-log)
 
 ---
+
+## Basic Commands
+
+__Running the server__
+```
+python3 manage.py runserver
+```
 
 ## Migration
 
@@ -34,6 +46,15 @@ python3 manage.py shell
 Your normal Python interpreter won't be able to locate your models.
 
 The official docs for querying is [here](https://docs.djangoproject.com/en/3.0/topics/db/queries/).
+
+A quicke example
+```{python}
+from tracker.models import Fund
+
+print(Fund.objects.all())
+print(Fund.objects.filter())
+print(Fund.objects.get(ticker="IOZ.AX"))
+```
 
 ## Media in Dev
 
@@ -76,7 +97,7 @@ def add_context_var(request):
 ],
 ```
 
-## Sending QuerySet or data to DOM in HTML
+## Sending data to DOM in HTML
 
 So, QuerySet objects aren't too good for converting to JSON format, and so we first
 
@@ -105,6 +126,28 @@ which can be retrieved with
 
 ```{javascript}
 var value = JSON.parse(document.getElementById('id-name').textContent);
+```
+
+## Pagination
+
+```{python}
+from django.core.paginator import Paginator
+
+items = ['a', 'b', 'c', 'd', 'e']
+p = Paginator(items, 2)
+
+# Now for some methods and attributes
+print(p.page(1))
+print(p.page(1).number) # returns page number
+
+print(p.num_pages)
+print(p.page(1).object_list)
+print(p.page(1).has_previous))
+print(p.page(1).has_next))
+print(p.page(1).next_page_number))
+
+for page in p.page_range:
+    print(page)
 ```
 
 ## Worklog
