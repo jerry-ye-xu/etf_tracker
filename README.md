@@ -1,6 +1,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Running the Server](#running-the-server)
 - [Alpha Vantage](#alpha-vantage)
 - [Initial Setup](#initial-setup)
 - [Virtual Env](#virtual-env)
@@ -23,6 +24,35 @@ The `ETF Tracker` project takes a list of funds that we're interested in and ret
 The idea is simple, we are not waiting for a huge dip, but make regularly investments guided by slight dips in price.
 
 The hypothesis is that we can squeeze in slightly more returns.
+
+## Running the Server
+
+__Getting your Alpha Vantage API key__
+
+First, you will need to get your own Alpha Vantage API key [here](https://www.alphavantage.co/support/#api-key).
+
+Save it as `VANTAGE_API_KEY` in the same directory as `README.md` and export it with
+```
+export VANTAGE_API_KEY=$(cat VANTAGE_API_KEY)
+```
+
+__Virtual env__
+
+Now you need to create the virtual env and install the dependencies with
+```
+virtualenv venv
+source activate.sh
+pip3 install -r requirements.txt
+```
+
+__Django backend__
+
+You'll need to create an admin password and setup your data tables.
+
+Finally, you can run the server (inside the `django_backend` dir) with
+```
+python3 manage.py runserver
+```
 
 ## Alpha Vantage
 

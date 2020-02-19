@@ -1,6 +1,8 @@
 ## Table of Contents
 
 - [Basic Commands](#basic-commands)
+- [Creating Admin Privileges](#creating-admin-privileges)
+- [Creating a Table](#creating-a-table)
 - [Migrations](#migrations)
 - [Querying](#querying)
 - [Media in Dev](#media-in-dev)
@@ -16,6 +18,25 @@
 __Running the server__
 ```
 python3 manage.py runserver
+```
+
+## Creating a Database
+
+To kickstart the initial migration we use
+```
+python3 manage.py migrate
+```
+
+## Creating Admin Privileges
+
+Before you create a user for admin, you need to create a database.
+
+See [__Creating a database__](#creating-a-database)
+
+The user details are stored in `auth_user` table.
+
+```{bash}
+python3 manage.py createsuperuser
 ```
 
 ## Migration
