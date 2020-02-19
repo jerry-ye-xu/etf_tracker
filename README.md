@@ -47,12 +47,27 @@ pip3 install -r requirements.txt
 
 __Django backend__
 
-You'll need to create an admin password and setup your data tables.
+Before you start the migration, create a backup dir with
+```{bash}
+mkdir ../data/fund_backup # inside django_backend dir
+python3 manage.py migrate
+```
 
 Finally, you can run the server (inside the `django_backend` dir) with
 ```
 python3 manage.py runserver
 ```
+and see the website at
+```
+http://127.0.0.1:8000/tracker/
+```
+
+You might want to create an admin account.
+
+```{bash}
+python3 manage.py createsuperuser
+```
+After you spin up the server, you can access the admin page by adding `admin` at the end of the base url.
 
 ## Alpha Vantage
 
