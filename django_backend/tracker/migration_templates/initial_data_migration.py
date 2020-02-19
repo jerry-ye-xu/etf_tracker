@@ -16,7 +16,7 @@ INTERVAL = "daily"
 SERIES_TYPE = "close"
 DAYS_TO_STORE = 120
 
-SLEEP_TIME = 20
+SLEEP_TIME = 60
 
 FORMAT = "%(asctime)s: %(name)s - %(levelname)s\n %(message)s"
 
@@ -34,9 +34,12 @@ LOGS.add_handler(
     name="sma_fund.log"
 )
 
-def load_initial_funds(apps, schema_editor):
+def reload_from_scratch(apps, schema_editor):
     Fund = apps.get_model("tracker", "Fund")
     FundPrices = apps.get_model("tracker", "FundPrices")
+
+    Fund.objects.all().delete()
+    FundPrices.objects.all().delete()
 
     with open(FUND_CSV_PATH, 'r') as f:
         num_tickers = f.readline()
@@ -46,21 +49,24 @@ def load_initial_funds(apps, schema_editor):
         for line in f:
             arr = [x.strip() for x in line.split(sep=",")]
 
+            print(arr)
+
             ticker: str = arr[0]
-            low_freq_period: int = int(arr[1])
-            high_freq_period: int = int(arr[2])
-            low_streak_alert: int = int(arr[3])
-            high_streak_alert: int = int(arr[4])
+            ticker_full_name: str = arr[1]
+            low_freq_period: int = int(arr[2])
+            high_freq_period: int = int(arr[3])
+            low_streak_alert: int = int(arr[4])
+            high_streak_alert: int = int(arr[5])
 
             print(f"Loading {ticker} into class object")
-            ALL_FUNDS[idx] = fund(ticker, LOGS)
+            print(f"{ticker}'s full name is {ticker_full_name}")
+            ALL_FUNDS[idx] = fund(ticker, DAYS_TO_STORE, LOGS)
             # print(aapl_fund.freq_low)
 
             result = ALL_FUNDS[idx].initial_build(
                 FUNCTION,
                 INTERVAL,
                 SERIES_TYPE,
-                DAYS_TO_STORE,
                 low_freq_period,
                 high_freq_period,
                 low_streak_alert,
@@ -75,6 +81,7 @@ def load_initial_funds(apps, schema_editor):
             print(f"Creating Fund object for DB")
             curr_fund = Fund(
                 ticker = ALL_FUNDS[idx].ticker,
+                ticker_full_name = ticker_full_name,
                 function = ALL_FUNDS[idx].function,
                 interval = ALL_FUNDS[idx].interval,
                 series_type = ALL_FUNDS[idx].series_type,
@@ -84,6 +91,9 @@ def load_initial_funds(apps, schema_editor):
                 high_freq_period = ALL_FUNDS[idx].high_freq_period,
                 low_streak_alert = ALL_FUNDS[idx].low_streak_alert,
                 high_streak_alert = ALL_FUNDS[idx].high_streak_alert,
+
+                latest_low_price = ALL_FUNDS[idx].latest_low_price,
+                latest_high_price = ALL_FUNDS[idx].latest_high_price,
 
                 status = ALL_FUNDS[idx].status,
                 status_duration = ALL_FUNDS[idx].status_duration,
@@ -132,14 +142,3 @@ def reverse_initial_funds(apps, schema_editor):
 
     Fund.objects.all().delete()
     FundPrices.objects.all().delete()
-
-
-class Migration(migrations.Migration):
-
-    dependencies = [
-        ('tracker', '0002_auto_20200112_0530'),
-    ]
-
-    operations = [
-        migrations.RunPython(load_initial_funds, reverse_initial_funds)
-    ]

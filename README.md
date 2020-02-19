@@ -1,6 +1,7 @@
 ## Table of Contents
 
 - [Introduction](#introduction)
+- [Running the Server](#running-the-server)
 - [Alpha Vantage](#alpha-vantage)
 - [Initial Setup](#initial-setup)
 - [Virtual Env](#virtual-env)
@@ -23,6 +24,52 @@ The `ETF Tracker` project takes a list of funds that we're interested in and ret
 The idea is simple, we are not waiting for a huge dip, but make regularly investments guided by slight dips in price.
 
 The hypothesis is that we can squeeze in slightly more returns.
+
+## Running the Server
+
+__Getting your Alpha Vantage API key__
+
+First, you will need to get your own Alpha Vantage API key [here](https://www.alphavantage.co/support/#api-key).
+
+Save it as `VANTAGE_API_KEY` in the same directory as `README.md` and export it with
+```
+export VANTAGE_API_KEY=$(cat VANTAGE_API_KEY)
+```
+
+__Virtual env__
+
+Now you need to create the virtual env and install the dependencies with
+```
+virtualenv venv
+source activate.sh
+pip3 install -r requirements.txt
+```
+
+__Django backend__
+
+Before you start the migration, create a backup dir with
+```{bash}
+cd django_backend
+mkdir ../data/fund_backup
+python3 manage.py migrate
+```
+This will access Alpha Vantage and return all the prices. Since there is an API call limit, the whole process will take around 10 minutes.
+
+Finally, you can run the server (inside the `django_backend` dir) with
+```
+python3 manage.py runserver
+```
+and see the website at
+```
+http://127.0.0.1:8000/tracker/
+```
+
+You might want to create an admin account.
+
+```{bash}
+python3 manage.py createsuperuser
+```
+After you spin up the server, you can access the admin page by adding `admin` at the end of the base url.
 
 ## Alpha Vantage
 
@@ -227,6 +274,7 @@ For more of a difference in values between two lines (Financey), see [here](http
 
 ## Worklog
 
+- 0.0.15-rc | 19/02/20: Clean up messy migrations and ensure that people can spin up the server with minimal steps.
 - 0.0.14-rc | 18/02/20: Add search bar filter functionality.
 - 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Change colour scheme to green.
 - 0.0.12-rc | 16/02/20: Build pagination, add additional fund data with migration. Add `latest_low/high_price` to `fund.py`.
