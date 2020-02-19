@@ -25,6 +25,8 @@ The idea is simple, we are not waiting for a huge dip, but make regularly invest
 
 The hypothesis is that we can squeeze in slightly more returns.
 
+![ETF Tracker screenshot](./webpage_screenshot.png)
+
 ## Running the Server
 
 __Getting your Alpha Vantage API key__
