@@ -1,11 +1,16 @@
 alpha-vantage==2.1.2
+asgiref==3.2.3
 certifi==2019.11.28
 chardet==3.0.4
 cycler==0.10.0
 DateTime==4.3
+Django==3.0.2
+-e git+git@github.com:jerry-ye-xu/etf_tracker.git@19ecd5abe866328626a5d308dfc16d286207f16b#egg=fund_package&subdirectory=fund_package
 idna==2.8
 kiwisolver==1.1.0
 matplotlib==3.1.2
+mypy==0.761
+mypy-extensions==0.4.3
 numpy==1.17.4
 pandas==0.25.3
 pyparsing==2.4.5
@@ -13,5 +18,8 @@ python-dateutil==2.8.1
 pytz==2019.3
 requests==2.22.0
 six==1.13.0
+sqlparse==0.3.0
+typed-ast==1.4.0
+typing-extensions==3.7.4.1
 urllib3==1.25.7
 zope.interface==4.7.1
