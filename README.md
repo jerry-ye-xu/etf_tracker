@@ -274,6 +274,7 @@ For more of a difference in values between two lines (Financey), see [here](http
 
 ## Worklog
 
+- 0.0.15-rc | 19/02/20: Clean up messy migrations and ensure that people can spin up the server with minimal steps.
 - 0.0.14-rc | 18/02/20: Add search bar filter functionality.
 - 0.0.13-rc | 17/02/20: Finished first prototype of d3 chart. Change colour scheme to green.
 - 0.0.12-rc | 16/02/20: Build pagination, add additional fund data with migration. Add `latest_low/high_price` to `fund.py`.
