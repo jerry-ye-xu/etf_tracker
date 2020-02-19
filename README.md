@@ -53,7 +53,7 @@ cd django_backend
 mkdir ../data/fund_backup
 python3 manage.py migrate
 ```
-This will access Alpha Vantage and return all the prices. Since there is an API call limit, the whole process will take around 20 minutes.
+This will access Alpha Vantage and return all the prices. Since there is an API call limit, the whole process will take around 10 minutes.
 
 Finally, you can run the server (inside the `django_backend` dir) with
 ```
