@@ -49,7 +49,8 @@ __Django backend__
 
 Before you start the migration, create a backup dir with
 ```{bash}
-mkdir ../data/fund_backup # inside django_backend dir
+cd django_backend
+mkdir ../data/fund_backup
 python3 manage.py migrate
 ```
 This will access Alpha Vantage and return all the prices. Since there is an API call limit, the whole process will take around 20 minutes.
