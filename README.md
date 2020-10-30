@@ -13,7 +13,7 @@
 - [Adding Tickers](#adding-tickers)
 - [Colours](#colours)
 - [d3 Enhancements](#d3-enhancements)
-- [Worklog](#work-log)
+- [Worklog](#worklog)
 
 ---
 
