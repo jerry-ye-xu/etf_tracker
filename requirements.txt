@@ -4,7 +4,7 @@ certifi==2019.11.28
 chardet==3.0.4
 cycler==0.10.0
 DateTime==4.3
-Django==3.0.2
+Django==3.1.6
 -e git+git@github.com:jerry-ye-xu/etf_tracker.git@19ecd5abe866328626a5d308dfc16d286207f16b#egg=fund_package&subdirectory=fund_package
 idna==2.8
 kiwisolver==1.1.0
